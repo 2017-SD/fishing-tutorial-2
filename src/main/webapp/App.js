@@ -1,37 +1,48 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+
 import AppNav from './AppNav'
 
-//import getLogin from '../../../../controllers/fish/UserController'
 import 'whatwg-fetch'
 
 class App extends Component {
     constructor(props) {
         super(props)
+
         this.state = {
-          logged_in: true,
+            logged_in: false,
         }
     }
 
-    logIn() {
-      this.setState({logged_in: true})
-      // TODO login
-      alert('LOGIN')
+    // handles logging the user in
+    logIn = (usrname, passwd) => {
+        this.setState({logged_in: true})
+        // TODO login
+        console.log(`IN LOGIN: ${usrname} | ${passwd}`)
+        //console.log(`IN LOGIN: logged_in: ${this.state.logged_in}`)
     }
 
-    logOut() {
-      this.setState({logged_in: false})
-      // TODO logout
-      alert('LOGOUT')
+    // handles logging the user out
+    logOut = () => {
+        this.setState({logged_in: false})
+        // TODO logout
+
+        console.log(`IN LOGOUT: logged_in: ${this.state.logged_in}`)
     }
 
     render() {
       return(
-          <AppNav
-              loggedIn={this.state.loggedIn}
-              logIn={() => this.logIn()}
-              logOut={() => this.logOut()}
-          />
+          <div>
+              {/*
+                    navbar
+                    receives whether or not user is logged in
+                    to know which function to call
+               */}
+              <AppNav
+                  loggedIn={this.state.logged_in}
+                  logIn={this.logIn}
+                  logOut={this.logOut}
+              />
+          </div>
       )
     }
 }
