@@ -27,6 +27,7 @@
     "mocha-image-compiler": "1.0.0",
     "node": "^10.2.0",
     "prop-types": "15.6.0",
+    "qs": "^6.5.2",
     "react": "16.2.0",
     "react-bootstrap": "0.32.1",
     "react-dom": "16.2.0",

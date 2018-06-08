@@ -2,6 +2,13 @@ import React, { Component } from 'react'
 
 import AppNav from './AppNav'
 
+import { SERVER_URL } from './config';
+
+import Auth from './security/auth';
+
+import { defaultErrorHandler } from './handlers/errorHandlers';
+import { checkResponseStatus, loginResponseHandler } from './handlers/responseHandlers';
+
 import 'whatwg-fetch'
 
 class App extends Component {
@@ -10,6 +17,9 @@ class App extends Component {
 
         this.state = {
             logged_in: false,
+            // showing_modal: false,
+            // usrname: "",
+            // passwd: "",
         }
     }
 
@@ -30,6 +40,11 @@ class App extends Component {
     }
 
     render() {
+
+      const {
+          logged_in,
+      }  = this.state
+
       return(
           <div>
               {/*
@@ -38,10 +53,15 @@ class App extends Component {
                     to know which function to call
                */}
               <AppNav
-                  loggedIn={this.state.logged_in}
+                  loggedIn={logged_in}
                   logIn={this.logIn}
                   logOut={this.logOut}
               />
+
+              {/*
+                    TODO
+                    new catch button
+              */}
           </div>
       )
     }

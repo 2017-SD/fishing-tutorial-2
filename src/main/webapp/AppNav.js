@@ -1,6 +1,6 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Navbar, Nav, NavItem, Modal, Button, FormGroup, FormControl, ControlLabel } from 'react-bootstrap'
+import { Navbar, Modal, Button, FormGroup, FormControl, ControlLabel } from 'react-bootstrap'
 
 import LoginModal from './LoginModal'
 
@@ -24,7 +24,7 @@ class AppNav extends Component {
         logOut: PropTypes.func,
     }
 
-    // updates the property being changed
+    // updates the form property being changed
     handleChange = (e) => {
         this.setState({ [e.target.id]: e.target.value })
     }
@@ -45,17 +45,19 @@ class AppNav extends Component {
     }
 
     render() {
-          const {
+            const {
               logged_in,
-              logIn,
               logOut,
-          } = this.props
+            } = this.props
 
-          const {
+            const {
               showing_modal,
               usrname,
               passwd,
-          } = this.state
+            } = this.state
+
+
+
 
           return (
               <div>
@@ -78,14 +80,15 @@ class AppNav extends Component {
                           <Navbar.Text>
                               The Fishing App
                           </Navbar.Text>
-                          <Navbar.Form pullRight>
-                              {
+                              {/*
+                                    renders login/logout button
+                                    depending on current state
+                              */
                                   logged_in ?
-                                      (<Button bsStyle="success" onClick={logOut}>Log Out</Button>)
+                                      (<Button className="pull-right" bsStyle="success" onClick={logOut}>Log Out</Button>)
                                       :
-                                      (<Button bsStyle="success" onClick={this.toggleModal}>Log In</Button>)
+                                      (<Button className="pull-right" bsStyle="success" onClick={this.toggleModal}>{logged_in} bi</Button>)
                               }
-                          </Navbar.Form>
                       </Navbar.Collapse>
                   </Navbar>
 

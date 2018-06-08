@@ -1,5 +1,12 @@
 package fish
 
+import grails.compiler.GrailsCompileStatic
+import grails.rest.Resource
+import grails.plugin.springsecurity.annotation.Secured
+
+@GrailsCompileStatic
+@Secured(['ROLE_USER'])
+@Resource(uri = '/api/catch')
 class Catch {
     String tripName
     String fishType
