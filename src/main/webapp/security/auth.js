@@ -33,7 +33,7 @@ export default {
 
     loggedIn() {
         return localStorage.auth && fetch(
-            `${SERVER_URL}/api/vehicle`,
+            `${SERVER_URL}/api/catch`,
             {headers: headers()})
             .then(checkResponseStatus)
             .then(() => { return true })

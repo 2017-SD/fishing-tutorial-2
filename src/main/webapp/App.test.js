@@ -1,9 +1,12 @@
 import React from 'react';
-import TestRenderer from 'react-test-renderer/shallow';
+import Adapter from 'enzyme-adapter-react-16'
+import { shallow, mount, render, configure } from 'enzyme';
 
 import App from './App';
+import AppNav from './AppNav'
 
 it('renders without crashing', () => {
-  const renderer = TestRenderer.createRenderer();
-  renderer.render(<App/>)
+    configure({ adapter: new Adapter() })
+
+    render(<AppNav/>)
 });
