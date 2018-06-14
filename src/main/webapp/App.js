@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Modal, Form, FormGroup, FormControl, ControlLabel, Button } from 'react-bootstrap'
 
 import AppNav from './AppNav'
+import Catch from './Catch'
 
 import { SERVER_URL } from './config';
 
@@ -62,9 +63,11 @@ class App extends Component {
             }
 
             else {
-                this.setState({route: 'login'});
+                this.setState({route: 'login'})
             }
         })();
+
+        console.log(`route: ${this.state.route}`)
     }
 
     componentDidUpdate() {
@@ -84,7 +87,7 @@ class App extends Component {
         console.log('login')
         e.preventDefault()
 
-        console.log(JSON.stringify(this.state.user_details))
+
 
         fetch(`${SERVER_URL}/api/login`, {
             method: 'POST',
@@ -96,6 +99,8 @@ class App extends Component {
         }).then(checkResponseStatus)
             .then(response => loginResponseHandler(response, this.loginHandler))
             .catch(error => defaultErrorHandler(error, this.errorHandler))
+
+        this.setState({logged_in: true})
     }
 
     // handles logging the user out
@@ -103,7 +108,6 @@ class App extends Component {
         Auth.logOut();
         this.reset();
     }
-
 
     loginHandler = () => {
         this.setState({route: 'catch'})
@@ -163,7 +167,7 @@ class App extends Component {
                */}
               <AppNav
                   showModal={this.toggleModal}
-                  route={route}
+                  logged_in={logged_in}
                   logOut={this.logOut}
               />
 
@@ -211,9 +215,12 @@ class App extends Component {
               </Modal>
 
               {/*
-                    TODO
                     new catch button
-              */}
+                    only shows when logged in
+              */
+
+                  logged_in && <Catch/>
+              }
 
           </div>
         )

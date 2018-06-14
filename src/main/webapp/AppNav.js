@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Navbar, Button } from 'react-bootstrap'
 
 
-import LoginModal from './LoginModal'
+//import LoginModal from './LoginModal'
 
 import logo from './images/logo.png' // WEBAPP DIR
 import 'whatwg-fetch'
@@ -11,14 +11,15 @@ import 'whatwg-fetch'
 class AppNav extends Component {
     static propTypes = {
         showModal: PropTypes.func,
-        route: PropTypes.string,
-        logOut: PropTypes.func,
+        logged_in: PropTypes.bool,
+        logOut: PropTypes.func
     }
 
 
     checkRoute()  {
         const {
             showModal,
+            logged_in,
             logOut,
         } = this.props
 
@@ -26,14 +27,20 @@ class AppNav extends Component {
         const logout = <Button className="pull-right" bsStyle="success" onClick={logOut}>Log Out</Button>
 
 
-        switch (this.props.route) {
-        case 'login':
-            return login
-        case 'catch':
+        // switch (route) {
+        // case 'login':
+        //     return login
+        // case 'catch':
+        //     return logout
+        // default:
+        //     return <p>Loading...</p>
+        // }
+        //alert(`logged_in boolean: ${logged_in}`)
+
+        if (logged_in)
             return logout
-        default:
-            return <p>Loading...</p>
-        }
+        else
+            return login
     }
 
 

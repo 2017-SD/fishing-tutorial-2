@@ -1,11 +1,11 @@
 package fish
 
 import grails.compiler.GrailsCompileStatic
-import grails.rest.Resource
 import grails.plugin.springsecurity.annotation.Secured
+import grails.rest.Resource
 
 @GrailsCompileStatic
-@Secured(['ROLE_USER'])
+@Secured(['permitAll'])
 @Resource(uri = '/api/catch')
 class Catch {
     String tripName
@@ -16,7 +16,7 @@ class Catch {
     Date dateCaught
     String image
 
-    static belongsTo = [user: User]
+    static belongsTo = [fisher: Fisher]
 
     static constraints = {
         tripName blank: false

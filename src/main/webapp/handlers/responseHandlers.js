@@ -5,6 +5,13 @@ export const checkResponseStatus = (response) => {
         return response.json()
     }
 
+
+    // redirect
+    else if (response. status == 302) {
+        console.log(response.json())
+    }
+
+
     else {
         let error = new Error(response.statusText);
         error.response = response;

@@ -12,6 +12,7 @@ export default {
 
     logOut() {
         delete localStorage.auth;
+        console.log('in auth.logout')
     },
 
     refreshToken() {
@@ -33,7 +34,7 @@ export default {
 
     loggedIn() {
         return localStorage.auth && fetch(
-            `${SERVER_URL}/api/catch`,
+            `${SERVER_URL}/api/fisher`,
             {headers: headers()})
             .then(checkResponseStatus)
             .then(() => { return true })

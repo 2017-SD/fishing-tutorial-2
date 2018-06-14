@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Button } from 'react-bootstrap'
 
 import { SERVER_URL } from './config'
@@ -18,12 +18,14 @@ class Catch extends Component {
     }
 
     componentDidMount() {
-        fetch(`${SERVER_URL}/api/catch`, {
+        fetch(`${SERVER_URL}/catch/getCatches`, {
             method: 'GET',
             headers: headers(),
         })
             .then(r => r.json())
-            .then(json => this.setState({catches: json}))
+            .then(json => {
+                this.setState({catches: json})
+            })
             .catch(error => console.error('Error retrieving catches: ' + error));
 
 
@@ -36,17 +38,37 @@ class Catch extends Component {
             .catch(error => console.error('Error retrieving fishers: ' + error));
     }
 
-
-    render() {
+    testing = () => {
         const {
             catches,
             fishers,
         } = this.state
 
 
+        fetch(`${SERVER_URL}/catch/getCatches`, {
+            method: 'GET',
+            headers: headers(),
+        })
+            .then(r => r.json())
+            .then(json => {
+                this.setState({catches: json})
+            })
+            .catch(error => console.error('Error retrieving catches: ' + error));
+
+
+        console.log(`catches: ${JSON.stringify(catches)}\nfishers: ${JSON.stringify(fishers)}`)
+    }
+
+
+    render() {
         return(
-            <div>
-                <Button bsStyle="success" onClick={() => console.log(`catches: ${catches}\nfishers: ${fishers}`)}>New Catch</Button>
+            <div className="text-center">
+                <Button
+                    bsStyle="success"
+                    onClick={this.testing}
+                >
+                    New Catch
+                </Button>
             </div>
         )
     }
