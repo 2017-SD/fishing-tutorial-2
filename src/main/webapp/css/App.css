@@ -5,12 +5,6 @@
 }
 
 
-.grails-icon img {
-  height: 27px;
-  background-image: url("../images/grails-cupsonly-logo-white.svg");
-}
-
-
 a {
   color: #db4800;
   text-decoration: underline;
@@ -62,8 +56,9 @@ a:hover {
 /*}*/
 
 .navbar {
-  border: none;
-  border-radius: none;
+    border: none;
+    border-radius: none;
+    line-height: 50px;
 }
 
 .nav-link {
@@ -112,6 +107,10 @@ a:hover {
   height: 80px;
   padding: 0;
   margin: 0;
+}
+
+.navbar-text {
+    color: #FFFFFF;
 }
 
 @media (min-width: 768px) {
