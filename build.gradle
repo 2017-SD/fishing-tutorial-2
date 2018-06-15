@@ -14,7 +14,7 @@ buildscript {
     }
 }
 
-version "0.1"
+version "0.2"
 group "fish"
 
 apply plugin:"eclipse"
@@ -69,8 +69,8 @@ dependencies {
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
     // Adds Spring Security plugins
     compile 'org.grails.plugins:spring-security-core:3.2.0'
-    compile 'org.grails.plugins:spring-security-ui:3.1.1'
-    compile 'org.grails.plugins:mail:2.0.0.RC6'
+    //compile 'org.grails.plugins:spring-security-ui:3.1.1'
+    //compile 'org.grails.plugins:mail:2.0.0.RC6'
 }
 
 bootRun {
@@ -80,8 +80,8 @@ bootRun {
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
 }
 node {
-    version = '10.1.0'
-    yarnVersion = '1.6.0'
+    version = '10.2.0'
+    yarnVersion = '1.7.0'
     distBaseUrl = 'https://nodejs.org/dist'
     download = false
 }
