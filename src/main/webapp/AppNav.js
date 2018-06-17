@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { Navbar, Button } from 'react-bootstrap'
+import { Navbar, Button, Nav } from 'react-bootstrap'
 
 
 import logo from './images/logo.png' // WEBAPP DIR
@@ -14,7 +14,7 @@ class AppNav extends Component {
         logOut: PropTypes.func
     }
 
-    getButton()  {
+    getButton() {
         const {
             showModal,
             logged_in,

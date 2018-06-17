@@ -23,6 +23,18 @@ class App extends Component {
         }
     }
 
+    reset = () => {
+        this.setState({
+            logged_in: false,
+            showing_modal: false,
+
+            user_details: {
+                username: '',
+                password: ''
+            }
+        })
+    }
+
 
     /* END STATE */
 
@@ -44,13 +56,45 @@ class App extends Component {
 
     /** LOGIN/LOGOUT FUNCTIONS */
 
-    logIn = () => {
-        alert('LOGIN')
+    logIn = (e) => {
+        e.preventDefault()
+
+        const data = new FormData(e.target)
+
+        // log in
+        fetch('/login/authenticate', {
+            method: 'POST',
+            body: data
+        }).then(r => {
+            console.log(JSON.stringify(r))
+
+            // check to see if user is logged in
+                fetch('/user/getLogin', {
+                    method: 'GET'
+                }).then(r => r.json())
+                    .then(json => console.log(`Logged in: ${JSON.stringify(json)}`))
+                    .catch(error => console.error(`Error viewing login status: ${error}`))
+
+        })
+            // .then(json => {
+
+            // })
+            .catch(error => console.error(`Error logging in: ${error}`))
+
+        // check to see if user is logged in
+        //     fetch('/user/getLogin', {
+        //         method: 'GET'
+        //     }).then(r => r.json())
+        //         .then(json => console.log(`Logged in: ${JSON.stringify(json)}`))
+        //         .catch(error => console.error(`Error logging in: ${error}`))
+
     }
 
     logOut = () => {
 
         alert('LOGOUT')
+
+        this.reset()
     }
 
     /* END LOGIN/LOGOUT FUNCTIONS */
@@ -114,35 +158,32 @@ class App extends Component {
                     <Modal.Header closeButton>
                         <Modal.Title>Log In</Modal.Title>
                     </Modal.Header>
-                    <Form onSubmit={this.logIn}>
+
                         <Modal.Body>
-                            <FormGroup controlId="username">
-                                <ControlLabel>Username</ControlLabel>
-                                <FormControl
-                                    autoFocus
-                                    type="username"
-                                    onChange={this.formInputChangeHandler}
-                                    value={user_details.username}
-                                    placeholder={"Username"}
-                                />
-                            </FormGroup>
-                            <FormGroup controlId="password">
-                                <ControlLabel>Password</ControlLabel>
-                                <FormControl
-                                    type="password"
-                                    value={user_details.password}
-                                    onChange={this.formInputChangeHandler}
-                                    placeholder={"Password"}
-                                />
-                            </FormGroup>
+                            <form onSubmit={this.logIn} action={"POST"} autoComplete="off">
+                                <p>
+                                    <label htmlFor="username">Username:</label>
+                                    <input type="text"
+                                           value={user_details.username}
+                                           onChange={this.formInputChangeHandler}
+                                           id="username"
+                                    />
+                                </p>
+
+                                <p>
+                                    <label htmlFor="password">Password:</label>
+                                    <input type="password"
+                                           value={user_details.password}
+                                           onChange={this.formInputChangeHandler}
+                                           id="password"
+                                    />
+                                </p>
+                                <Button type="submit">Log In</Button>
+                            </form>
                         </Modal.Body>
-                        <Modal.Footer>
-                            <Button type="submit">Log In</Button>
-                        </Modal.Footer>
-                    </Form>
                 </Modal>
 
-                <h3>{logged_in ? 'logged in!' : null}</h3>
+                <h3>{logged_in ? 'logged in!' : ''}</h3>
 
             </div>
         )
