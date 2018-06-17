@@ -10366,9 +10366,9 @@ var App = function (_Component) {
             var data = new FormData(e.target);
 
             // log in
-            fetch('/login/authenticate', {
+            fetch('/login/auth', {
                 method: 'POST',
-                body: data
+                body: _this.state.user_details //data
             }).then(function (r) {
                 console.log(JSON.stringify(r));
 
@@ -10502,7 +10502,7 @@ var App = function (_Component) {
                         null,
                         _react2.default.createElement(
                             'form',
-                            { onSubmit: this.logIn, action: "POST", autoComplete: 'off' },
+                            { onSubmit: this.logIn, autoComplete: 'off' },
                             _react2.default.createElement(
                                 'p',
                                 null,

@@ -62,18 +62,18 @@ class App extends Component {
         const data = new FormData(e.target)
 
         // log in
-        fetch('/login/authenticate', {
+        fetch('/login/auth', {
             method: 'POST',
             body: data
         }).then(r => {
             console.log(JSON.stringify(r))
 
             // check to see if user is logged in
-                fetch('/user/getLogin', {
-                    method: 'GET'
-                }).then(r => r.json())
-                    .then(json => console.log(`Logged in: ${JSON.stringify(json)}`))
-                    .catch(error => console.error(`Error viewing login status: ${error}`))
+            fetch('/user/getLogin', {
+                method: 'GET'
+            }).then(r => r.json())
+                .then(json => console.log(`Logged in: ${JSON.stringify(json)}`))
+                .catch(error => console.error(`Error viewing login status: ${error}`))
 
         })
             // .then(json => {
@@ -160,7 +160,7 @@ class App extends Component {
                     </Modal.Header>
 
                         <Modal.Body>
-                            <form onSubmit={this.logIn} action={"POST"} autoComplete="off">
+                            <form onSubmit={this.logIn} autoComplete="off">
                                 <p>
                                     <label htmlFor="username">Username:</label>
                                     <input type="text"
