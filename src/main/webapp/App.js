@@ -62,7 +62,7 @@ class App extends Component {
         const data = new FormData(e.target)
 
         // log in
-        fetch('/login/auth', {
+        fetch('/login/authenticate', {
             method: 'POST',
             body: data
         }).then(r => {

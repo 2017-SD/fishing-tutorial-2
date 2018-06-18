@@ -10366,9 +10366,9 @@ var App = function (_Component) {
             var data = new FormData(e.target);
 
             // log in
-            fetch('/login/auth', {
+            fetch('/login/authenticate', {
                 method: 'POST',
-                body: _this.state.user_details //data
+                body: data
             }).then(function (r) {
                 console.log(JSON.stringify(r));
 
