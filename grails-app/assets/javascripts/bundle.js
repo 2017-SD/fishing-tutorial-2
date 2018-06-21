@@ -10294,7 +10294,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -10330,109 +10330,66 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 var App = function (_Component) {
-  _inherits(App, _Component);
+    _inherits(App, _Component);
 
-  function App() {
-    _classCallCheck(this, App);
+    function App() {
+        _classCallCheck(this, App);
 
-    var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-    _this.state = {
-      serverInfo: {},
-      clientInfo: {
-        version: _config.CLIENT_VERSION,
-        react: _config.REACT_VERSION
-      }
-    };
-    return _this;
-  }
+        _this.showCatches = function () {
+            var url = "/catch/getCatches";
 
-  _createClass(App, [{
-    key: 'componentDidMount',
-    value: function componentDidMount() {
-      var _this2 = this;
+            fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin' // Need credentials so that the JSESSIONID cookie is sent
+            }).then(function (r) {
+                console.log(r);
 
-      fetch(_config.SERVER_URL + '/application').then(function (r) {
-        return r.json();
-      }).then(function (json) {
-        return _this2.setState({ serverInfo: json });
-      }).catch(function (error) {
-        return console.error('Error connecting to server: ' + error);
-      });
+                window.location = r.url;
+            });
+        };
+
+        _this.loggedIn = function () {
+            var url = "/user/getLogin";
+
+            fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin' // Need credentials so that the JSESSIONID cookie is sent
+            }).then(function (r) {
+                console.log(r);
+
+                window.location = r.url;
+            });
+        };
+
+        _this.state = {};
+        return _this;
     }
-  }, {
-    key: 'render',
-    value: function render() {
-      var serverInfo = this.state.serverInfo;
-      var clientInfo = this.state.clientInfo;
 
-      return _react2.default.createElement(
-        'div',
-        null,
-        _react2.default.createElement(_AppNav2.default, { serverInfo: serverInfo, clientInfo: clientInfo }),
-        _react2.default.createElement(
-          'div',
-          { className: 'grails-logo-container' },
-          _react2.default.createElement('img', { className: 'grails-logo', src: _grailsCupsonlyLogoWhite2.default, alt: 'Grails' }),
-          _react2.default.createElement(
-            'span',
-            { className: 'plus-logo' },
-            '+'
-          ),
-          _react2.default.createElement('img', { className: 'hero-logo', src: _logo2.default, alt: 'React' })
-        ),
-        _react2.default.createElement(
-          _reactBootstrap.Grid,
-          null,
-          _react2.default.createElement(
-            'div',
-            { id: 'content' },
-            _react2.default.createElement(
-              'section',
-              { className: 'row colset-2-its' },
-              _react2.default.createElement(
-                'h1',
-                { style: { textAlign: 'center' } },
-                'Welcome to Grails'
-              ),
-              _react2.default.createElement('br', null),
-              _react2.default.createElement(
-                'p',
-                null,
-                'won\'t re-render live :('
-              ),
-              _react2.default.createElement(
+    _createClass(App, [{
+        key: 'render',
+        value: function render() {
+
+            return _react2.default.createElement(
                 'div',
-                { id: 'controllers', role: 'navigation' },
+                null,
                 _react2.default.createElement(
-                  'h2',
-                  null,
-                  'Available Controllers:'
+                    _reactBootstrap.Button,
+                    { onClick: this.showCatches },
+                    'get catches'
                 ),
+                _react2.default.createElement('br', null),
                 _react2.default.createElement(
-                  'ul',
-                  null,
-                  serverInfo.controllers ? serverInfo.controllers.map(function (controller) {
-                    return _react2.default.createElement(
-                      'li',
-                      { key: controller.name },
-                      _react2.default.createElement(
-                        'a',
-                        { href: _config.SERVER_URL + controller.logicalPropertyName },
-                        controller.name
-                      )
-                    );
-                  }) : null
+                    _reactBootstrap.Button,
+                    { onClick: this.loggedIn },
+                    'check if logged in'
                 )
-              )
-            )
-          )
-        )
-      );
-    }
-  }]);
+            );
+        }
+    }]);
 
-  return App;
+    return App;
 }(_react.Component);
 
 exports.default = App;

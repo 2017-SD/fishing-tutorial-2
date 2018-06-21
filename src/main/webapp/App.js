@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Grid } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+
 import AppNav from './AppNav';
 
 import grailsLogo from './images/grails-cupsonly-logo-white.svg';
@@ -9,63 +10,54 @@ import 'whatwg-fetch';
 
 class App extends Component {
 
-  constructor() {
-    super();
+    constructor() {
+        super();
 
-    this.state = {
-      serverInfo: {},
-      clientInfo: {
-        version: CLIENT_VERSION,
-        react: REACT_VERSION
-      }
+        this.state = {
+
+        }
     }
-  }
 
-  componentDidMount() {
-    fetch(SERVER_URL + '/application')
-      .then(r => r.json())
-      .then(json => this.setState({serverInfo: json}))
-      .catch(error => console.error('Error connecting to server: ' + error));
+    showCatches = () => {
+        const url = "/catch/getCatches";
 
-  }
+        fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',     // Need credentials so that the JSESSIONID cookie is sent
+        })
+          .then(r => {
+              console.log(r)
 
-  render() {
-    const serverInfo = this.state.serverInfo;
-    const clientInfo = this.state.clientInfo;
+              window.location = r.url
+          })
+    }
 
-    return (
-      <div>
-        <AppNav serverInfo={serverInfo} clientInfo={clientInfo}/>
-        <div className="grails-logo-container">
-          <img className="grails-logo" src={grailsLogo} alt="Grails" />
-          <span className="plus-logo">+</span>
-          <img className="hero-logo" src={reactLogo} alt="React" />
-        </div>
+    loggedIn = () => {
+        const url = "/user/getLogin";
 
-        <Grid>
-          <div id="content">
-            <section className="row colset-2-its">
-              <h1 style={{textAlign: 'center'}}>Welcome to Grails</h1>
-              <br/>
-              <p>
-                won't re-render live :(
-              </p>
+        fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',
+        })
+            .then(r => {
+              console.log(r)
 
-              <div id="controllers" role="navigation">
-                <h2>Available Controllers:</h2>
-                <ul>
-                  {serverInfo.controllers ? serverInfo.controllers.map(controller => {
-                    return <li key={controller.name}><a href={SERVER_URL + controller.logicalPropertyName}>{ controller.name }</a></li>;
-                  }) : null }
-                </ul>
+              window.location = r.url
+            })
+    }
+
+    render() {
+
+
+        return (
+              <div>
+                  <Button onClick={this.showCatches}>get catches</Button>
+                  <br/>
+                  <Button onClick={this.loggedIn}>check if logged in</Button>
+
               </div>
-            </section>
-
-          </div>
-        </Grid>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 export default App;

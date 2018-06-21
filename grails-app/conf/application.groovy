@@ -14,7 +14,13 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/**/js/**',       access: ['permitAll']],
 	[pattern: '/**/css/**',      access: ['permitAll']],
 	[pattern: '/**/images/**',   access: ['permitAll']],
-	[pattern: '/**/favicon.ico', access: ['permitAll']]
+	[pattern: '/**/favicon.ico', access: ['permitAll']],
+
+    [pattern: '/logout/**',      access: ['permitAll']],  // for easy access to logout
+    [pattern: '/catch/**',       access: ['ROLE_USER']],  // for catch controller
+    [pattern: '/sw.js',          access: ['permitAll']],  // for service worker
+    [pattern: '/User/getLogin',  access: ['permitAll']],  // to check user login info
+    [pattern: '/dbconsole/**',   access: ['ROLE_ADMIN']], // for access to H2 console
 ]
 
 grails.plugin.springsecurity.filterChain.chainMap = [
