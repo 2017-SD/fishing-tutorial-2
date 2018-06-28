@@ -11,7 +11,9 @@ class UserController {
 
         if (user != null) {
             render user.fname
-        } else {
+        }
+
+        else {
             render false
         }
 
