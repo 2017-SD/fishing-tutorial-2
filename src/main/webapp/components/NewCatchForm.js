@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component } from 'react';
 import { Button, FormControl, FormGroup, ControlLabel, ButtonToolbar } from 'react-bootstrap';
 
 import 'whatwg-fetch';
@@ -20,7 +20,7 @@ class NewCatchForm extends Component {
     }
 
 
-    // validation
+    /** validates form */
     valid = () => {
         const {
             tripName,
@@ -46,7 +46,7 @@ class NewCatchForm extends Component {
             return false
         }
         else if ((xCoord !== 0 && isNaN(xCoord))
-                || (xCoord !== 0 && isNaN(yCoord))) {
+                || (yCoord !== 0 && isNaN(yCoord))) {
             alert('Coordinates must be numbers!')
             this.setState({valid_form: false})
             return false
@@ -56,12 +56,14 @@ class NewCatchForm extends Component {
     }
 
 
+
+    /** submits the form if valid */
     handleSubmit = (e) => {
         e.preventDefault();
 
 
         if (!this.valid()) {
-            alert('Please correct any form errors.')
+            //alert('Please correct any form errors.')
             return
         }
 
@@ -80,6 +82,8 @@ class NewCatchForm extends Component {
         this.props.submitNewCatch(data)
     }
 
+
+    /** form update handlers */
     handleChange = (e) => {
         const target = e.target;
         const name = target.name;
@@ -99,9 +103,9 @@ class NewCatchForm extends Component {
             image: file
         })
     }
+    /* end update handlers */
 
     render() {
-        //console.log(`coords: ${this.state.xCoord}, ${this.state.yCoord}`)
 
         return(
             <form onSubmit={this.handleSubmit}>
@@ -147,7 +151,7 @@ class NewCatchForm extends Component {
                     <ControlLabel>X-Coordinate</ControlLabel>
                     <FormControl
                         type="num"
-                        placeholder="X coordinate of fish location"
+                        value={this.state.xCoord}
                         name="xCoord"
                         onChange={this.handleChange}
                     />
@@ -159,7 +163,7 @@ class NewCatchForm extends Component {
                     <ControlLabel>Y-Coordinate</ControlLabel>
                     <FormControl
                         type="num"
-                        placeholder="Y coordinate of fish location"
+                        value={this.state.yCoord}
                         name="yCoord"
                         onChange={this.handleChange}
                     />

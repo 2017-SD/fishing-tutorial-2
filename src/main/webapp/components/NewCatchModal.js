@@ -18,15 +18,17 @@ class NewCatchModal extends Component {
         }
     }
 
+
+    /** checks location for autofilling coordinates in the form. */
     componentWillMount() {
-        // checks location for autofilling coordinates.
         if (!navigator.geolocation){
             console.log('no geolocation')
             return
         }
 
-
-        navigator.geolocation.getCurrentPosition(position => {
+        navigator.geolocation.getCurrentPosition(
+            // success callback
+            position => {
                 const latitude = position.coords.latitude;
                 const longitude = position.coords.longitude;
 
@@ -44,14 +46,21 @@ class NewCatchModal extends Component {
                     }
                 })
             },
+
+            // failure callback
             error => {
                 console.error("form.coords, couldn't get location: ", error)
-            });
+            }
+        );
     }
 
+
+    /** closes the modal */
     handleHideModal = () => {
         this.props.handleHideModal()
     }
+
+
 
     render() {
         const {
@@ -59,7 +68,7 @@ class NewCatchModal extends Component {
             submitNewCatch
         } = this.props
 
-        const coordinates = this.state
+        const coordinates = this.state.coordinates
 
 
         return (

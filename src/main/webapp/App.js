@@ -17,12 +17,13 @@ class App extends Component {
             online: true,
 
             showing_nc_modal: false,
-
+            // offline upload queue
             queue: [],
         }
     }
 
 
+    /** checks for online & logged in status */
     componentWillMount() {
         // check if online
         this.setState({online: navigator.onLine})
@@ -36,8 +37,6 @@ class App extends Component {
                     .then( () => { console.log("Service Worker Registered"); });
             }
         }
-
-
 
         // check if logged in
         const url = "/user/getLogin";
@@ -56,9 +55,22 @@ class App extends Component {
                     this.setState({logged_in: true})
                 }
             })
+
+
+        // get upload queue
+        Store.getQueue()
+            .then(q => {
+                let cache = this.state.queue
+
+                cache.push(q)
+
+                this.setState({queue: cache})
+            })
+            .catch(e => {console.error('error retrieving catches: ', e)})
     }
 
 
+    /** updates the online status */
     componentWillUpdate() {
         // if online status was changed
         const { online } = this.state
@@ -68,17 +80,34 @@ class App extends Component {
     }
 
 
+    /** opens the modal */
+    showNewCatchModal = () => {
+        this.setState({
+            showing_nc_modal: true
+        })
+    }
 
-    handleHideModal = () => {
+    /** closes the modal */
+    hideNewCatchModal = () => {
         this.setState({
             showing_nc_modal: false
         })
     }
 
+
+    /** shows the upload queue in the console for now */
     showQueue = () => {
         console.log(this.state.queue)
     }
 
+    /** uploads the queue */
+    uploadQueue = () => {
+        // puts the image back in the dictionary to be posted
+        Store.submitQueue()
+    }
+
+
+    /** sends user to show catches that have been uploaded */
     showCatches = () => {
         const url = "/catch/getCatches";
 
@@ -93,13 +122,12 @@ class App extends Component {
             })
     }
 
-    showNewCatchModal = () => {
-        this.setState({
-            showing_nc_modal: true
-        })
-    }
 
-
+    /**
+     * saves the new catch data if online & logged in
+     * stores it if not
+     * @param data - catch data
+     */
     submitNewCatch = (data) => {
         const {
             online,
@@ -107,8 +135,8 @@ class App extends Component {
         } = this.state
 
 
-
-        if (online && logged_in) {  // post to grails
+        // post to grails
+        if (online && logged_in) {
             let formDat = new FormData()
 
             for (let key in data) {
@@ -129,7 +157,9 @@ class App extends Component {
                     console.log(`in app.submitnewcatch fetch: response status: ${r.status}`)
                 })
         }
-        else { // save in localforage
+
+        // save in localforage
+        else {
             alert("saving catch in queue to upload later.")
             Store.storeCatch(data)
                 .then(d => {
@@ -158,8 +188,6 @@ class App extends Component {
         } = this.state
 
 
-        //let queue = Store.checkQueue()
-
         return (
               <div>
                   <AppNav logged_in={logged_in}/>
@@ -174,12 +202,16 @@ class App extends Component {
                   <Button onClick={() => {console.log(`online: ${online}`)}}>online?</Button>
                   <br/>
                   <Button onClick={this.showQueue}>show queue in console.</Button>
-
+                  <br/>
+                  { /* only upload if online & logged in */
+                      online && logged_in &&
+                      <Button onClick={this.uploadQueue} bsStyle="success">Submit catch queue</Button>
+                  }
 
 
                   <NewCatchModal
                       showModal={showing_nc_modal}
-                      handleHideModal={this.handleHideModal}
+                      handleHideModal={this.hideNewCatchModal}
                       submitNewCatch={this.submitNewCatch}
                   />
               </div>

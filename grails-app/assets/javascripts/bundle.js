@@ -10354,7 +10354,13 @@ var App = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this));
 
-        _this.handleHideModal = function () {
+        _this.showNewCatchModal = function () {
+            _this.setState({
+                showing_nc_modal: true
+            });
+        };
+
+        _this.hideNewCatchModal = function () {
             _this.setState({
                 showing_nc_modal: false
             });
@@ -10362,6 +10368,11 @@ var App = function (_Component) {
 
         _this.showQueue = function () {
             console.log(_this.state.queue);
+        };
+
+        _this.uploadQueue = function () {
+            // puts the image back in the dictionary to be posted
+            _Store2.default.submitQueue();
         };
 
         _this.showCatches = function () {
@@ -10377,20 +10388,14 @@ var App = function (_Component) {
             });
         };
 
-        _this.showNewCatchModal = function () {
-            _this.setState({
-                showing_nc_modal: true
-            });
-        };
-
         _this.submitNewCatch = function (data) {
             var _this$state = _this.state,
                 online = _this$state.online,
                 logged_in = _this$state.logged_in;
 
+            // post to grails
 
             if (online && logged_in) {
-                // post to grails
                 var formDat = new FormData();
 
                 for (var key in data) {
@@ -10408,19 +10413,21 @@ var App = function (_Component) {
                 }).then(function (r) {
                     console.log('in app.submitnewcatch fetch: response status: ' + r.status);
                 });
-            } else {
-                // save in localforage
-                alert("saving catch in queue to upload later.");
-                _Store2.default.storeCatch(data).then(function (d) {
-                    var cache = _this.state.queue;
-
-                    cache.push(d);
-
-                    _this.setState({ queue: cache });
-                }).catch(function (e) {
-                    console.error('error storing catch: ', e);
-                });
             }
+
+            // save in localforage
+            else {
+                    alert("saving catch in queue to upload later.");
+                    _Store2.default.storeCatch(data).then(function (d) {
+                        var cache = _this.state.queue;
+
+                        cache.push(d);
+
+                        _this.setState({ queue: cache });
+                    }).catch(function (e) {
+                        console.error('error storing catch: ', e);
+                    });
+                }
 
             _this.setState({
                 showing_nc_modal: false
@@ -10432,11 +10439,14 @@ var App = function (_Component) {
             online: true,
 
             showing_nc_modal: false,
-
+            // offline upload queue
             queue: []
         };
         return _this;
     }
+
+    /** checks for online & logged in status */
+
 
     _createClass(App, [{
         key: 'componentWillMount',
@@ -10470,7 +10480,21 @@ var App = function (_Component) {
                     _this2.setState({ logged_in: true });
                 }
             });
+
+            // get upload queue
+            _Store2.default.getQueue().then(function (q) {
+                var cache = _this2.state.queue;
+
+                cache.push(q);
+
+                _this2.setState({ queue: cache });
+            }).catch(function (e) {
+                console.error('error retrieving catches: ', e);
+            });
         }
+
+        /** updates the online status */
+
     }, {
         key: 'componentWillUpdate',
         value: function componentWillUpdate() {
@@ -10480,6 +10504,28 @@ var App = function (_Component) {
 
             if (online !== navigator.onLine) this.setState({ online: navigator.onLine });
         }
+
+        /** opens the modal */
+
+
+        /** closes the modal */
+
+
+        /** shows the upload queue in the console for now */
+
+
+        /** uploads the queue */
+
+
+        /** sends user to show catches that have been uploaded */
+
+
+        /**
+         * saves the new catch data if online & logged in
+         * stores it if not
+         * @param data - catch data
+         */
+
     }, {
         key: 'render',
         value: function render() {
@@ -10488,7 +10534,6 @@ var App = function (_Component) {
                 showing_nc_modal = _state.showing_nc_modal,
                 online = _state.online;
 
-            //let queue = Store.checkQueue()
 
             return _react2.default.createElement(
                 'div',
@@ -10520,9 +10565,16 @@ var App = function (_Component) {
                     { onClick: this.showQueue },
                     'show queue in console.'
                 ),
+                _react2.default.createElement('br', null),
+                /* only upload if online & logged in */
+                online && logged_in && _react2.default.createElement(
+                    _reactBootstrap.Button,
+                    { onClick: this.uploadQueue, bsStyle: 'success' },
+                    'Submit catch queue'
+                ),
                 _react2.default.createElement(_NewCatchModal2.default, {
                     showModal: showing_nc_modal,
-                    handleHideModal: this.handleHideModal,
+                    handleHideModal: this.hideNewCatchModal,
                     submitNewCatch: this.submitNewCatch
                 })
             );
@@ -10798,7 +10850,7 @@ var NewCatchForm = function (_Component) {
                 alert('Enter a date!');
                 _this.setState({ valid_form: false });
                 return false;
-            } else if (xCoord !== 0 && isNaN(xCoord) || xCoord !== 0 && isNaN(yCoord)) {
+            } else if (xCoord !== 0 && isNaN(xCoord) || yCoord !== 0 && isNaN(yCoord)) {
                 alert('Coordinates must be numbers!');
                 _this.setState({ valid_form: false });
                 return false;
@@ -10811,7 +10863,7 @@ var NewCatchForm = function (_Component) {
             e.preventDefault();
 
             if (!_this.valid()) {
-                alert('Please correct any form errors.');
+                //alert('Please correct any form errors.')
                 return;
             }
 
@@ -10858,13 +10910,21 @@ var NewCatchForm = function (_Component) {
         return _this;
     }
 
-    // validation
+    /** validates form */
+
+
+    /** submits the form if valid */
+
+
+    /** form update handlers */
 
 
     _createClass(NewCatchForm, [{
         key: 'render',
+
+        /* end update handlers */
+
         value: function render() {
-            //console.log(`coords: ${this.state.xCoord}, ${this.state.yCoord}`)
 
             return _react2.default.createElement(
                 'form',
@@ -10932,7 +10992,7 @@ var NewCatchForm = function (_Component) {
                     ),
                     _react2.default.createElement(_reactBootstrap.FormControl, {
                         type: 'num',
-                        placeholder: 'X coordinate of fish location',
+                        value: this.state.xCoord,
                         name: 'xCoord',
                         onChange: this.handleChange
                     })
@@ -10949,7 +11009,7 @@ var NewCatchForm = function (_Component) {
                     ),
                     _react2.default.createElement(_reactBootstrap.FormControl, {
                         type: 'num',
-                        placeholder: 'Y coordinate of fish location',
+                        value: this.state.yCoord,
                         name: 'yCoord',
                         onChange: this.handleChange
                     })
@@ -11061,18 +11121,22 @@ var NewCatchModal = function (_Component) {
         return _this;
     }
 
+    /** checks location for autofilling coordinates in the form. */
+
+
     _createClass(NewCatchModal, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
             var _this2 = this;
 
-            // checks location for autofilling coordinates.
             if (!navigator.geolocation) {
                 console.log('no geolocation');
                 return;
             }
 
-            navigator.geolocation.getCurrentPosition(function (position) {
+            navigator.geolocation.getCurrentPosition(
+            // success callback
+            function (position) {
                 var latitude = position.coords.latitude;
                 var longitude = position.coords.longitude;
 
@@ -11086,10 +11150,16 @@ var NewCatchModal = function (_Component) {
                         y: longitude
                     }
                 });
-            }, function (error) {
+            },
+
+            // failure callback
+            function (error) {
                 console.error("form.coords, couldn't get location: ", error);
             });
         }
+
+        /** closes the modal */
+
     }, {
         key: 'render',
         value: function render() {
@@ -11098,7 +11168,7 @@ var NewCatchModal = function (_Component) {
                 submitNewCatch = _props.submitNewCatch;
 
 
-            var coordinates = this.state;
+            var coordinates = this.state.coordinates;
 
             return _react2.default.createElement(
                 _reactBootstrap.Modal,
@@ -11215,6 +11285,58 @@ function b64toBlob(b64Data, contentType, sliceSize) {
     return blob;
 }
 
+/** submits one at a time */
+function submitHelper(item) {
+    var url = "/catch/newCatch";
+    var formDat = new FormData();
+
+    // if there is a photo
+    if (item.image !== null) {
+        // This is getting the photo of the catch out of localforage
+        // it then makes a promise in which the fetch is called after
+        // it is full filled
+        _localforage2.default.getItem(item.image, function (err, data) {
+            // convert the blob string back to an appropriate file
+            var block = data.split(";");
+            var contentType = block[0].split(":")[1];
+            var realData = block[1].split(",")[1];
+            var image = b64toBlob(realData, contentType);
+
+            item.image = image;
+
+            for (var key in item) {
+                if (item.hasOwnProperty(key)) {
+                    formDat.append(key, item[key]);
+                }
+            }
+        }).then(function () {
+            fetch(url, {
+                method: 'POST',
+                credentials: 'same-origin',
+                body: formDat
+            }).then(function (r) {
+                console.log('in uploading queue: response status: ' + r.status);
+            });
+
+            _localforage2.default.removeItem(item.image);
+        });
+    } else {
+        for (var key in item) {
+            if (item.hasOwnProperty(key)) {
+                formDat.append(key, item[key]);
+            }
+        }
+
+        fetch(url, {
+            method: 'POST',
+            credentials: 'same-origin',
+            body: formDat
+        }).then(function (r) {
+            console.log('in uploading queue: response status: ' + r.status);
+        });
+    }
+}
+
 /* end HELPER FUNCTIONS */
 
 /** function called in app to store catch data in localforage */
@@ -11225,7 +11347,7 @@ function storeCatch(data) {
             if (data.image !== null) {
                 var imageUpload = data.image;
 
-                console.log('save q - imageUpload: ', imageUpload);
+                //console.log('save q - imageUpload: ', imageUpload)
 
                 // for converting image to blob string setup
                 var reader = new FileReader();
@@ -11244,9 +11366,7 @@ function storeCatch(data) {
                         return reject(e);
                     });
                 };
-            } else {}
-            // no image
-
+            }
 
             // storing the catch data in localforage in a queue
             var catches = [];
@@ -11275,55 +11395,46 @@ function storeCatch(data) {
     });
 }
 
-// /** function called in app to see if existing catch data in localforage */
-// function checkQueue() {
-//     let queued = false
-//
-//     localforage.setDriver(localforage.INDEXEDDB)
-//         .then(() => {
-//             localforage.getItem('catches')
-//                 .then(q => { // queue
-//                     if (q !== null) {
-//                         queued = true
-//                     }
-//                 })
-//                 .catch(e => { console.error(`localforage - failed to check queue for catches catches: ${e}`) })
-//         });
-//
-//
-//     return queued
-// }
+/** gets current queue from localforage */
+function getQueue() {
+    return new Promise(function (resolve, reject) {
+        _localforage2.default.setDriver(_localforage2.default.INDEXEDDB).then(function () {
+            _localforage2.default.getItem('catches').then(function (q) {
+                // queue
+                resolve(q);
+            }).catch(function (e) {
+                reject(e);
+            });
+        });
+    });
+}
 
-// function getQueue() {
-//     let queue = []
-//
-//     localforage.setDriver(localforage.INDEXEDDB)
-//         .then(() => {
-//             localforage.getItem('catches')
-//                 .then(q => { // queue
-//                     if (q !== null) {
-//                         queue = q
-//                     }
-//                 })
-//                 .catch(e => { console.error(`localforage - failed to check queue for catches catches: ${e}`) })
-//         });
-//
-//     return queue
-// }
-//
-//
-// /**
-//  * function called in app to retrieve catch data from localforage
-//  *  & post it to grails
-//  */
-// function submitQueue() {
-//
-// }
+/**
+ * function called in app to retrieve catch data from localforage
+ *  & post it to grails
+ */
+function submitQueue() {
+    _localforage2.default.setDriver(_localforage2.default.INDEXEDDB).then(function () {
+        _localforage2.default.getItem('catches').then(function (q) {
+            var i = 0;
 
+            for (i; i < q.length; i++) {
+                submitHelper(q[i]);
+            }
 
-exports.default = { storeCatch: storeCatch //, checkQueue, getQueue, submitQueue }
+            // after all items in the queue are submitted, remove them
+            _localforage2.default.removeItem('catches').then(function () {
+                alert('queue upload success!');
+            }).catch(function (e) {
+                console.error('error removing catch queue: ', e);
+            });
+        }).catch(function (e) {
+            console.log('error submitting queue: ' + e);
+        });
+    });
+}
 
-};
+exports.default = { storeCatch: storeCatch, getQueue: getQueue, submitQueue: submitQueue };
 
 /***/ }),
 /* 156 */

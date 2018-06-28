@@ -20,8 +20,6 @@ class CatchController {
     }
 
 
-
-    //TODO: Data verification check
     // Takes form parameters and saves it to the database
     def newCatch() {
 
@@ -42,6 +40,7 @@ class CatchController {
 
         // if image was passed else make it null (queue sends null parameter as string)
         if (imageUpload != null && imageUpload != "null") {
+                                                            // CHANGE TO STORE INSIDE APP LATER
             def destDir = System.getProperty("user.home") + "/Desktop/fish_img/"
 
             def id = UUID.randomUUID().toString()
