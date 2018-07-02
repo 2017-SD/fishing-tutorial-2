@@ -1,5 +1,7 @@
 import localforage from 'localforage';
 
+import print from '../util/Print'
+
 import 'whatwg-fetch';
 
 
@@ -90,7 +92,7 @@ function submitHelper(item) {
                     body: formDat
                 })
                     .then(r =>  {
-                        console.log(`in uploading queue: response status: ${r.status}`)
+                        print("Store.submitHelper", r.status)
                     })
 
 
@@ -110,7 +112,7 @@ function submitHelper(item) {
             body: formDat
         })
             .then(r =>  {
-                console.log(`in uploading queue: response status: ${r.status}`)
+                print("Store.submitHelper", r.status)
             })
     }
 }
@@ -194,27 +196,33 @@ function getQueue() {
  *  & post it to grails
  */
 function submitQueue() {
-    localforage.setDriver(localforage.INDEXEDDB).then(() => {
-        localforage.getItem('catches')
-            .then(q => {
-                let i = 0
+    return new Promise((resolve, reject) => {
+        localforage.setDriver(localforage.INDEXEDDB).then(() => {
+            localforage.getItem('catches')
+                .then(q => {
 
-                for (i; i < q.length; i++) {
-                    if (q[i] == null)
-                        continue
-                    
-                    submitHelper(q[i])
-                }
+                    if (q == null)
+                        return
 
-                // after all items in the queue are submitted, remove them
-                localforage.removeItem('catches')
-                    .then(() => {
-                        alert('queue upload success!')
-                    })
-                    .catch(e => {console.error('error removing catch queue: ', e)})
-            })
-            .catch(e => { console.log(`error submitting queue: ${e}`) })
-    });
+                    let i = 0
+
+                    for (i; i < q.length; i++) {
+                        if (q[i] == null)
+                            continue
+
+                        submitHelper(q[i])
+                    }
+
+                    // after all items in the queue are submitted, remove them
+                    localforage.removeItem('catches')
+                        .then(() => {
+                            alert('queue upload success!')
+                        })
+                        .catch(e => { reject(e) })
+                })
+                .catch(e => { reject(e) })
+        });
+    })
 }
 
 

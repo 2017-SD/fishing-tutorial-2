@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Button, FormControl, FormGroup, ControlLabel, ButtonToolbar } from 'react-bootstrap';
 
+//import print from '../util/Print'
+
 import 'whatwg-fetch';
 
 class NewCatchForm extends Component {

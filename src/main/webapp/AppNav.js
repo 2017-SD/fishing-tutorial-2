@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import PropTypes from 'prop-types'
 
+//import print from './util/Print'
 
 import logo from './images/logo.png';
 import 'whatwg-fetch';

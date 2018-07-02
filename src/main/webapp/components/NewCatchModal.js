@@ -3,6 +3,8 @@ import { Modal } from 'react-bootstrap';
 
 import NewCatchForm from './NewCatchForm'
 
+import print from '../util/Print'
+
 import 'whatwg-fetch';
 
 
@@ -22,7 +24,7 @@ class NewCatchModal extends Component {
     /** checks location for autofilling coordinates in the form. */
     componentWillMount() {
         if (!navigator.geolocation){
-            console.log('no geolocation')
+            print("NewCatchModal.cwm", 'no geolocation')
             return
         }
 
@@ -49,7 +51,7 @@ class NewCatchModal extends Component {
 
             // failure callback
             error => {
-                console.error("form.coords, couldn't get location: ", error)
+                print("NewCatchModal.cwm: ", error, 1)
             }
         );
     }

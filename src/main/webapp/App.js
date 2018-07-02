@@ -3,10 +3,15 @@ import { Button } from 'react-bootstrap';
 
 import AppNav from './AppNav';
 import NewCatchModal from './components/NewCatchModal'
+import UploadQueue from './components/CatchUploadQueue'
+import CatchTable from './components/CatchTable'
 
 import Store from './offline/Store'
+import print from './util/Print'
+import isEmpty from './util/ArrayFunc'
 
 import 'whatwg-fetch';
+import CatchDetailModal from "./components/CatchDetailModal";
 
 class App extends Component {
     constructor() {
@@ -17,12 +22,16 @@ class App extends Component {
             online: true,
 
             showing_nc_modal: false,
-            // offline upload queue
-            queue: [],
+
+            queue: [],                      // offline upload queue
+            posted_catches: [],
+            // showing_detail_modal: false,
+            // display_catch: [],              // catch info to display
         }
     }
 
 
+    // TODO
     /** checks for online & logged in status */
     componentWillMount() {
         // check if online
@@ -34,7 +43,7 @@ class App extends Component {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker
                     .register('./sw.js')
-                    .then( () => { console.log("Service Worker Registered"); });
+                    .then( (r) => { print("App.cwm - service worker registered", r.scope); });
             }
         }
 
@@ -60,13 +69,13 @@ class App extends Component {
         // get upload queue
         Store.getQueue()
             .then(q => {
-                let cache = this.state.queue
+                if (isEmpty(q)) {
+                    return
+                }
 
-                cache.push(q)
-
-                this.setState({queue: cache})
+                this.setState({queue: q})
             })
-            .catch(e => {console.error('error retrieving catches: ', e)})
+            .catch(e => {print("App.cwm.Store.getQueuePromise", e, 1)})
     }
 
 
@@ -94,16 +103,36 @@ class App extends Component {
         })
     }
 
-
-    /** shows the upload queue in the console for now */
-    showQueue = () => {
-        console.log(this.state.queue)
+    showDetailModal = (c) => {
+        this.setState({
+            display_catch: c,
+            showing_detail_modal: true
+        })
     }
+
+    hideDetailModal = () => {
+        this.setState({showing_detail_modal: false})
+    }
+
+
+    /** helper to get queue items */
+    getQueue = () => {
+        let list = []
+        let q = this.state.queue
+
+        for (let item in q) {
+            list.push(q[item].tripName)
+        }
+
+        return list
+    }
+
 
     /** uploads the queue */
     uploadQueue = () => {
-        // puts the image back in the dictionary to be posted
         Store.submitQueue()
+            .then(() => {this.setState({queue: []})})
+            .catch((e) => {print("App.uploadQueue", e, 1)})
     }
 
 
@@ -116,9 +145,21 @@ class App extends Component {
             credentials: 'same-origin',     // Need credentials so that the JSESSIONID cookie is sent
         })
             .then(r => {
-                console.log(r)
+                r.json()
+                    .then(catches => {
+                        //print("App.showCatches", catches)
 
-                window.location = r.url
+                        if (!isEmpty(catches)) {
+                            let c = []
+
+                            for (let fish in catches) {
+                                c.push(catches[fish])
+                            }
+
+
+                            this.setState({posted_catches: c})
+                        }
+                    })
             })
     }
 
@@ -154,7 +195,7 @@ class App extends Component {
                 body: formDat
             })
                 .then(r =>  {
-                    console.log(`in app.submitnewcatch fetch: response status: ${r.status}`)
+                    print("App.submitnewcatch.fetch", r.status)
                 })
         }
 
@@ -169,7 +210,7 @@ class App extends Component {
 
                     this.setState({queue: cache})
                 })
-                .catch(e => {console.error('error storing catch: ', e)})
+                .catch(e => {print("App.submitNewCatch.Store.storeCatchPromise", e, 1)})
         }
 
 
@@ -184,28 +225,56 @@ class App extends Component {
         const {
             logged_in,
             showing_nc_modal,
-            online
+            online,
+            queue,
+            posted_catches
         } = this.state
 
+
+        // for upload queue
+        let items_in_queue = false
+        let list = []
+
+        if (!isEmpty(queue)) {
+            list = this.getQueue()
+
+
+            items_in_queue = true
+        }
+
+
+        // for posted catches
+        let catches = (!isEmpty(posted_catches))
+
+        //print("App.render", posted_catches)
 
         return (
               <div>
                   <AppNav logged_in={logged_in}/>
 
-                  { /* only show catches if online */
-                      online &&
-                      <Button onClick={this.showCatches} bsStyle="success">show catches</Button>
+                  { /* shows if there is a queue */
+                      items_in_queue &&
+                      <UploadQueue queue={list}/>
                   }
                   <br/>
-                  <Button onClick={this.showNewCatchModal} bsStyle="success">new catch</Button>
-                  <br/>
-                  <Button onClick={() => {console.log(`online: ${online}`)}}>online?</Button>
-                  <br/>
-                  <Button onClick={this.showQueue}>show queue in console.</Button>
-                  <br/>
                   { /* only upload if online & logged in */
+                      items_in_queue && online && logged_in &&
+                      <Button onClick={this.uploadQueue} bsStyle="success">Submit Pending Catches</Button>
+                  }
+                  <br/>
+                  <Button onClick={this.showNewCatchModal} bsStyle="success">New Catch</Button>
+                  <br/>
+                  { /* only show catches if online & logged in */
                       online && logged_in &&
-                      <Button onClick={this.uploadQueue} bsStyle="success">Submit catch queue</Button>
+                      <Button onClick={this.showCatches} bsStyle="success">Show Your Catches</Button>
+                  }
+                  <br/>
+                  { /* only show if there have been catches posted */
+                      catches &&
+                      <CatchTable
+                          catches={posted_catches}
+                          //showDetailModal={this.showDetailModal}
+                      />
                   }
 
 
