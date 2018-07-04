@@ -1,53 +1,82 @@
-import React from 'react';
-import { Navbar, NavDropdown, Nav, MenuItem } from 'react-bootstrap';
-
-import grailsLogo from './images/grails.svg';
-import 'whatwg-fetch';
-
-function AppNav({serverInfo, clientInfo}) {
-
-  const {environment, appprofile, appversion, grailsversion, reloadingagentenabled, artefacts, plugins} = serverInfo;
-
-  return(
-    <Navbar style={{backgroundColor: '#424649', backgroundImage: 'none', borderRadius: 0}}>
-      <Navbar.Header>
-        <Navbar.Brand>
-          <img src={grailsLogo} alt="Grails" width="80" height="80"/>
-        </Navbar.Brand>
-        <Navbar.Toggle />
-      </Navbar.Header>
-      <Navbar.Collapse>
-        <Nav pullRight>
-          <NavDropdown eventKey="4" title="Application Status " id="app-status">
-            <MenuItem eventKey="4.1">Environment: {environment}</MenuItem>
-            <MenuItem eventKey="4.2">Grails profile: {appprofile ? appprofile.replace('org.grails.profiles:', '') : null}</MenuItem>
-            <MenuItem eventKey="4.2">Grails version: {grailsversion}</MenuItem>
-            <MenuItem eventKey="4.3">React version: {clientInfo ? clientInfo.react.replace('^', '') : null}</MenuItem>
-            <MenuItem eventKey="4.3">Server version: {appversion}</MenuItem>
-            <MenuItem eventKey="4.3">Client version: {clientInfo ? clientInfo.version : null}</MenuItem>
-            <MenuItem divider />
-            <MenuItem eventKey="4.4">Reloading active: {reloadingagentenabled ? 'true' : 'false'}</MenuItem>
-          </NavDropdown>
-
-          <NavDropdown eventKey="4" title="Artefacts " id="artefacts">
-            <MenuItem eventKey="4.1">Controllers: {artefacts ? artefacts.controllers : 0}</MenuItem>
-            <MenuItem eventKey="4.2">Domains: {artefacts ? artefacts.domains : 0}</MenuItem>
-            <MenuItem eventKey="4.3">Services: {artefacts ? artefacts.services : 0}</MenuItem>
-          </NavDropdown>
-
-          <NavDropdown eventKey="4" title="Installed Plugins " id="plugins">
-
-            {plugins ? plugins.map(plugin => {
-              return <MenuItem eventKey="4.1" key={plugin.name}>{plugin.name} - {plugin.version}</MenuItem>
-            }) : null
-            }
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Navbar, Button } from 'react-bootstrap'
 
 
-          </NavDropdown>
-        </Nav>
-      </Navbar.Collapse>
-    </Navbar>);
+//import LoginModal from './LoginModal'
 
+import logo from './images/logo.png' // WEBAPP DIR
+import 'whatwg-fetch'
+
+class AppNav extends Component {
+    static propTypes = {
+        showModal: PropTypes.func,
+        logged_in: PropTypes.bool,
+        logOut: PropTypes.func
+    }
+
+
+    checkRoute()  {
+        const {
+            showModal,
+            logged_in,
+            logOut,
+        } = this.props
+
+        const login = <Button className="pull-right" bsStyle="success" onClick={showModal}>Log In</Button>
+        const logout = <Button className="pull-right" bsStyle="success" onClick={logOut}>Log Out</Button>
+
+
+        // switch (route) {
+        // case 'login':
+        //     return login
+        // case 'catch':
+        //     return logout
+        // default:
+        //     return <p>Loading...</p>
+        // }
+        //alert(`logged_in boolean: ${logged_in}`)
+
+        if (logged_in)
+            return logout
+        else
+            return login
+    }
+
+
+    render() {
+            const button = this.checkRoute()
+
+
+
+            return (
+              <div>
+                  {/* TODO FIX LOGO */}
+                  {/*
+                        navbar
+
+                        renders Log In if logged out & vice versa
+                  */}
+                  <Navbar inverse>
+                      <Navbar.Header>
+                          <Navbar.Brand>
+                              <a href={'/'} onClick={this.check}>
+                                  <img src={logo} alt="FishingApp" width="32" height="32"/>
+                              </a>
+                          </Navbar.Brand>
+                          <Navbar.Toggle/>
+                      </Navbar.Header>
+                      <Navbar.Collapse>
+                          <Navbar.Text>
+                              The Fishing App
+                          </Navbar.Text>
+                              {button}
+                      </Navbar.Collapse>
+                  </Navbar>
+              </div>
+            )
+    }
 }
+
 
 export default AppNav;

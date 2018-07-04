@@ -69,8 +69,6 @@ dependencies {
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
     // Adds Spring Security plugins
     compile 'org.grails.plugins:spring-security-core:3.2.0'
-    //compile 'org.grails.plugins:spring-security-ui:3.1.1'
-    //compile 'org.grails.plugins:mail:2.0.0.RC6'
 }
 
 bootRun {
