@@ -1,15 +1,6 @@
 package fish
 
-<<<<<<< HEAD
-import grails.compiler.GrailsCompileStatic
-import grails.plugin.springsecurity.annotation.Secured
-import grails.rest.Resource
 
-@GrailsCompileStatic
-@Secured(['permitAll'])
-@Resource(uri = '/api/catch')
-=======
->>>>>>> attempt_2
 class Catch {
     String tripName
     String fishType
@@ -19,11 +10,8 @@ class Catch {
     Date dateCaught
     String image
 
-<<<<<<< HEAD
-    static belongsTo = [fisher: Fisher]
-=======
     static belongsTo = [user: User]
->>>>>>> attempt_2
+
 
     static constraints = {
         tripName blank: false
@@ -34,8 +22,4 @@ class Catch {
         dateCaught blank: false
         image nullable: true
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> attempt_2

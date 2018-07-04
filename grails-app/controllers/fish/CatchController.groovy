@@ -1,35 +1,14 @@
 package fish
 
-<<<<<<< HEAD
-import grails.converters.JSON
-import grails.plugin.springsecurity.annotation.Secured
-
-
-@Secured(['ROLE_USER'])
-class CatchController {
-
-=======
-
 import grails.converters.JSON
 
 
 class CatchController {
->>>>>>> attempt_2
     def springSecurityService
 
     def index() { }
 
     def getCatches() {
-<<<<<<< HEAD
-//        Fisher me = springSecurityService.currentUser
-//        def catches = Catch.findAllByFisher(me).toArray()
-
-        def catches = Catch.list().toArray()
-
-        println catches
-
-        render catches as JSON
-=======
         User user = springSecurityService.currentUser
         render Catch.findAllByUser(user).toArray() as JSON
     }
@@ -93,48 +72,6 @@ class CatchController {
         )
 
         fishCatch.save(flush: true, failOnError: true)
-        render "OH YES OH YES"
-    }
-
-    // updates the catch in the database
-    def editCatch() {
-
-        def imagePath
-        def dateCaughtModified = new Date().parse("yyyy-MM-dd", params.dateCaught)
-
-        Catch getCatch = Catch.get(params.ID)   // get the catch
-
-        // if there is no image for the current catch
-        if (getCatch.image != null) {
-            imagePath = getCatch.image
-        } else {
-            imagePath = String.format("%s.jpg", UUID.randomUUID().toString())
-        }
-
-
-        // replace image
-        def imageUpload = params.image
-        def img_path = "Desktop/directed_study/code/building/grails/fish/src/main/webapp/images/uploaded"
-
-        if (imageUpload != null) {
-            def destDir = System.getProperty("user.home") + img_path
-            File destFile = new File(destDir, imagePath)
-            destFile.createNewFile()
-            imageUpload.transferTo(destFile)
-            getCatch.image = imagePath
-        }
-
-        // replace everything else
-        getCatch.tripName = params.tripName
-        getCatch.fishType = params.fishType
-        getCatch.dateCaught = dateCaughtModified
-        getCatch.xCoord = Float.parseFloat(params.xCoord)
-        getCatch.yCoord = Float.parseFloat(params.yCoord)
-        getCatch.comment = params.comment
-
-
-        getCatch.save(flush: true, failOnError: true)
-        render "OH YES OH YES"
->>>>>>> attempt_2
+        render "Success!"
     }
 }
