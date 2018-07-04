@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Button, FormControl, FormGroup, ControlLabel, ButtonToolbar } from 'react-bootstrap';
 
-//import print from '../util/Print'
-
 import 'whatwg-fetch';
 
 class NewCatchForm extends Component {
@@ -10,7 +8,6 @@ class NewCatchForm extends Component {
         super(props)
 
         this.state = {
-            // form fields
             tripName: '',
             fishType: '',
             dateCaught: '',
@@ -34,23 +31,19 @@ class NewCatchForm extends Component {
 
         if (tripName === '') {
             alert('Enter a trip name!')
-            this.setState({valid_form: false})
             return false
         }
         else if (fishType === '') {
             alert('Enter a type of fish!')
-            this.setState({valid_form: false})
             return false
         }
         else if (dateCaught === '') {
             alert('Enter a date!')
-            this.setState({valid_form: false})
             return false
         }
         else if ((xCoord !== 0 && isNaN(xCoord))
                 || (yCoord !== 0 && isNaN(yCoord))) {
             alert('Coordinates must be numbers!')
-            this.setState({valid_form: false})
             return false
         }
 
@@ -63,11 +56,8 @@ class NewCatchForm extends Component {
     handleSubmit = (e) => {
         e.preventDefault();
 
-
-        if (!this.valid()) {
-            //alert('Please correct any form errors.')
+        if (!this.valid())
             return
-        }
 
 
         const data = {
@@ -108,7 +98,6 @@ class NewCatchForm extends Component {
     /* end update handlers */
 
     render() {
-
         return(
             <form onSubmit={this.handleSubmit}>
                 <FormGroup

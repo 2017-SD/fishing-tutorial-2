@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Table } from 'react-bootstrap';
-import PropTypes from 'prop-types'
 
 import print from '../util/Print'
 import isEmpty from '../util/ArrayFunc'
@@ -8,31 +7,23 @@ import isEmpty from '../util/ArrayFunc'
 import 'whatwg-fetch';
 
 
-class UploadQueue extends Component {
-    static propTypes = {
-        queue: PropTypes.array
+/** shows the upload queue */
+const UploadQueue = props => {
+    const { queue } = props
+
+
+    if (isEmpty(queue)) {
+        print("CatchUploadQueue.showQueue", 'queue is empty')
+        return
     }
 
 
-    /** shows the upload queue */
-    showQueue = () => {
-
-        let queue = this.props.queue
-
-        //print("CatchUploadQueue.showQueue", queue)
-
-        if (isEmpty(queue)) {
-            print("CatchUploadQueue.showQueue", 'queue is empty')
-
-            return(<p></p>)
-        }
-
-
+    const table = () => {
         let rows = []
 
         for (let item in queue) {
             rows.push(
-                <tr>
+                <tr key={item}>
                     <td>{queue[item]}</td>
                 </tr>
             )
@@ -49,19 +40,10 @@ class UploadQueue extends Component {
                 </tbody>
             </Table>
         )
-
-        //return table
     }
 
 
-    render() {
-        //print("CatchUploadQueue.render", this.props.queue)
-
-        let table = this.showQueue()
-
-        return(table)
-    }
-
+    return table()
 }
 
 export default UploadQueue;

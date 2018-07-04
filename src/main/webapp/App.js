@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
-import { Button } from 'react-bootstrap';
+import { Button }           from 'react-bootstrap';
 
-import AppNav from './AppNav';
-import NewCatchModal from './components/NewCatchModal'
-import UploadQueue from './components/CatchUploadQueue'
-import CatchTable from './components/CatchTable'
+/** components */
+import AppNav           from './AppNav';
+import NewCatchModal    from './components/NewCatchModal'
+import UploadQueue      from './components/CatchUploadQueue'
+import CatchTable       from './components/CatchTable'
+import CatchDetailModal from "./components/CatchDetailModal";
 
-import Store from './offline/Store'
-import print from './util/Print'
-import isEmpty from './util/ArrayFunc'
+/** helper stuff */
+import Store    from './offline/Store'
+import print    from './util/Print'
+import isEmpty  from './util/ArrayFunc'
 
 import 'whatwg-fetch';
-import CatchDetailModal from "./components/CatchDetailModal";
 
 class App extends Component {
     constructor() {
@@ -21,17 +23,20 @@ class App extends Component {
             logged_in: false,
             online: true,
 
-            showing_nc_modal: false,
+            showing_nc_modal: false,        // new catch modal
+            coordinates: {                  // coordinates for the form
+                x: 0,
+                y: 0,
+            },
 
             queue: [],                      // offline upload queue
-            posted_catches: [],
-            // showing_detail_modal: false,
-            // display_catch: [],              // catch info to display
+            posted_catches: [],             // catches in the db
+            showing_detail_modal: false,    // catch detail modal
+            display_catch: {},              // catch info to display
         }
     }
 
 
-    // TODO
     /** checks for online & logged in status */
     componentWillMount() {
         // check if online
@@ -78,6 +83,40 @@ class App extends Component {
             .catch(e => {print("App.cwm.Store.getQueuePromise", e, 1)})
     }
 
+    /** checks location for autofilling coordinates in the form. */
+    componentDidMount() {
+        if (!navigator.geolocation){
+            print("App.cdm", 'no geolocation')
+            return
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            // success callback
+            position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+
+                if (latitude == null
+                    || longitude == null) {
+                    return
+                }
+
+
+                this.setState({
+                    coordinates: {
+                        x: latitude,
+                        y: longitude
+                    }
+                })
+            },
+
+            // failure callback
+            error => {
+                print("App.cdm - geolocate: ", error, 1)
+            }
+        );
+    }
 
     /** updates the online status */
     componentWillUpdate() {
@@ -89,20 +128,22 @@ class App extends Component {
     }
 
 
-    /** opens the modal */
+
+    /** opens the new catch modal */
     showNewCatchModal = () => {
         this.setState({
             showing_nc_modal: true
         })
     }
 
-    /** closes the modal */
+    /** closes the new catch modal */
     hideNewCatchModal = () => {
         this.setState({
             showing_nc_modal: false
         })
     }
 
+    /** opens the detail modal */
     showDetailModal = (c) => {
         this.setState({
             display_catch: c,
@@ -110,9 +151,14 @@ class App extends Component {
         })
     }
 
+    /** closes the detail modal */
     hideDetailModal = () => {
-        this.setState({showing_detail_modal: false})
+        this.setState({
+            display_catch: {},
+            showing_detail_modal: false
+        })
     }
+
 
 
     /** helper to get queue items */
@@ -127,7 +173,6 @@ class App extends Component {
         return list
     }
 
-
     /** uploads the queue */
     uploadQueue = () => {
         Store.submitQueue()
@@ -136,7 +181,29 @@ class App extends Component {
     }
 
 
-    /** sends user to show catches that have been uploaded */
+
+    /** stores the catch data in localforage */
+    submitNewCatch = (data) => {
+        alert("Saving catch in the queue to upload later.")
+        Store.storeCatch(data)
+            .then(d => {
+                let cache = this.state.queue
+
+                cache.push(d)
+
+                this.setState({queue: cache})
+            })
+            .catch(e => {print("App.submitNewCatch.Store.storeCatchPromise", e, 1)})
+
+
+        this.setState({
+            showing_nc_modal: false,
+        });
+    }
+
+
+
+    /** shows catches that have been uploaded */
     showCatches = () => {
         const url = "/catch/getCatches";
 
@@ -145,10 +212,7 @@ class App extends Component {
             credentials: 'same-origin',     // Need credentials so that the JSESSIONID cookie is sent
         })
             .then(r => {
-                r.json()
-                    .then(catches => {
-                        //print("App.showCatches", catches)
-
+                r.json().then(catches => {
                         if (!isEmpty(catches)) {
                             let c = []
 
@@ -164,70 +228,17 @@ class App extends Component {
     }
 
 
-    /**
-     * saves the new catch data if online & logged in
-     * stores it if not
-     * @param data - catch data
-     */
-    submitNewCatch = (data) => {
-        const {
-            online,
-            logged_in
-        } = this.state
-
-
-        // post to grails
-        if (online && logged_in) {
-            let formDat = new FormData()
-
-            for (let key in data) {
-                if (data.hasOwnProperty(key)) {
-                    formDat.append(key, data[key])
-                }
-            }
-
-
-            const url = "/catch/newCatch";
-
-            fetch(url, {
-                method: 'POST',
-                credentials: 'same-origin',
-                body: formDat
-            })
-                .then(r =>  {
-                    print("App.submitnewcatch.fetch", r.status)
-                })
-        }
-
-        // save in localforage
-        else {
-            alert("saving catch in queue to upload later.")
-            Store.storeCatch(data)
-                .then(d => {
-                    let cache = this.state.queue
-
-                    cache.push(d)
-
-                    this.setState({queue: cache})
-                })
-                .catch(e => {print("App.submitNewCatch.Store.storeCatchPromise", e, 1)})
-        }
-
-
-        this.setState({
-            showing_nc_modal: false,
-        });
-    }
-
 
     render() {
-
         const {
             logged_in,
             showing_nc_modal,
+            coordinates,
             online,
             queue,
-            posted_catches
+            posted_catches,
+            showing_detail_modal,
+            display_catch
         } = this.state
 
 
@@ -238,15 +249,13 @@ class App extends Component {
         if (!isEmpty(queue)) {
             list = this.getQueue()
 
-
             items_in_queue = true
         }
 
 
         // for posted catches
         let catches = (!isEmpty(posted_catches))
-
-        //print("App.render", posted_catches)
+        let catch_to_display = (display_catch !== {})
 
         return (
               <div>
@@ -254,35 +263,53 @@ class App extends Component {
 
                   { /* shows if there is a queue */
                       items_in_queue &&
-                      <UploadQueue queue={list}/>
+                      <div>
+                          <UploadQueue queue={list}/>
+                          <br/>
+                      </div>
                   }
-                  <br/>
                   { /* only upload if online & logged in */
                       items_in_queue && online && logged_in &&
-                      <Button onClick={this.uploadQueue} bsStyle="success">Submit Pending Catches</Button>
+                      <div>
+                        <Button onClick={this.uploadQueue} bsStyle="success">Submit Pending Catches</Button>
+                        <br/>
+                      </div>
                   }
-                  <br/>
                   <Button onClick={this.showNewCatchModal} bsStyle="success">New Catch</Button>
                   <br/>
                   { /* only show catches if online & logged in */
                       online && logged_in &&
-                      <Button onClick={this.showCatches} bsStyle="success">Show Your Catches</Button>
+                      <div>
+                          <Button onClick={this.showCatches} bsStyle="success">Show Your Catches</Button>
+                          <br/>
+                      </div>
                   }
-                  <br/>
                   { /* only show if there have been catches posted */
                       catches &&
-                      <CatchTable
-                          catches={posted_catches}
-                          //showDetailModal={this.showDetailModal}
-                      />
+                      <div>
+                          <CatchTable
+                              catches={posted_catches}
+                              showDetailModal={this.showDetailModal}
+                          />
+                      </div>
                   }
 
 
+                  {/* modals */}
                   <NewCatchModal
-                      showModal={showing_nc_modal}
-                      handleHideModal={this.hideNewCatchModal}
+                      showing={showing_nc_modal}
+                      hideModal={this.hideNewCatchModal}
+                      coordinates={coordinates}
                       submitNewCatch={this.submitNewCatch}
                   />
+                  {
+                      catch_to_display &&
+                      <CatchDetailModal
+                          showing={showing_detail_modal}
+                          hideModal={this.hideDetailModal}
+                          selected_catch={display_catch}
+                      />
+                  }
               </div>
         );
     }

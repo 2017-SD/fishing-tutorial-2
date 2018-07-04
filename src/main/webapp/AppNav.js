@@ -1,57 +1,43 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
-import PropTypes from 'prop-types'
-
-//import print from './util/Print'
 
 import logo from './images/logo.png';
 import 'whatwg-fetch';
 
-class AppNav extends Component {
-    static propTypes = {
-        logged_in: PropTypes.bool
-    }
+const AppNav = props => {
+    const { logged_in } = props;
 
 
     // conditionally renders login/logout link
-    accountAction() {
-        const logged_in = this.props
-        const value = Object.values(logged_in)
-
-        const login = <NavItem href={'/login/auth'}>Log In</NavItem>;
-        const logout = <NavItem href={'/logout'}>Log Out</NavItem>;
-
-
-        if (value == 'true')
-            return logout
-        else
-            return login
+    const nav = (link) => {
+        return (
+            <Navbar style={{backgroundColor: '#A4DB8F', backgroundImage: 'none', borderRadius: 2}}>
+                <Navbar.Header>
+                    <Navbar.Brand>
+                        <a href={'/'}>
+                            <img src={logo} width="32" height="32"/>
+                        </a>
+                    </Navbar.Brand>
+                    <Navbar.Toggle />
+                </Navbar.Header>
+                <Navbar.Collapse>
+                    <Nav pullRight>
+                        {link}
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
+        )
     }
 
 
-    render() {
+    const login = <NavItem href={'/login/auth'}>Log In</NavItem>;
+    const logout = <NavItem href={'/logout'}>Log Out</NavItem>;
 
-        const link = this.accountAction()
-
-        return(
-              <Navbar style={{backgroundColor: '#A4DB8F', backgroundImage: 'none', borderRadius: 2}}>
-                  <Navbar.Header>
-                      <Navbar.Brand>
-                          <a href={'/'}>
-                              <img src={logo} width="32" height="32"/>
-                          </a>
-                      </Navbar.Brand>
-                      <Navbar.Toggle />
-                  </Navbar.Header>
-                  <Navbar.Collapse>
-                        <Nav pullRight>
-                            {link}
-                        </Nav>
-                  </Navbar.Collapse>
-              </Navbar>
-        );
-    }
-
+    if (logged_in)
+        return nav(logout)
+    else
+        return nav(login)
 }
+
 
 export default AppNav;
