@@ -15,6 +15,7 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/**/css/**',      access: ['permitAll']],
 	[pattern: '/**/images/**',   access: ['permitAll']],
 	[pattern: '/**/favicon.ico', access: ['permitAll']],
+<<<<<<< HEAD
     [pattern: '/dbconsole/**',   access: ['ROLE_ADMIN']], // for access to H2 console
 	[pattern: '/logout/**',      access: ['permitAll']],  // for easy access to logout
 //	[pattern: '/catch/**',       access: ['ROLE_USER']],  // for catch controller
@@ -25,6 +26,14 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 	[pattern: '/role/**',             access: ['ROLE_ADMIN']],
 	[pattern: '/registrationCode/**', access: ['ROLE_ADMIN']],
 	[pattern: '/securityInfo/**',     access: ['ROLE_ADMIN']]
+=======
+
+    [pattern: '/logout/**',      access: ['permitAll']],  // for easy access to logout
+    [pattern: '/catch/**',       access: ['ROLE_USER']],  // for catch controller
+    [pattern: '/sw.js',          access: ['permitAll']],  // for service worker
+    [pattern: '/User/getLogin',  access: ['permitAll']],  // to check user login info
+    [pattern: '/dbconsole/**',   access: ['ROLE_ADMIN']], // for access to H2 console
+>>>>>>> attempt_2
 ]
 
 

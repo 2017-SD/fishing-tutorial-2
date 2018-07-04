@@ -1,229 +1,317 @@
-import React, { Component } from 'react'
-import { Modal, Form, FormGroup, FormControl, ControlLabel, Button } from 'react-bootstrap'
+import React, { Component } from 'react';
+import { Button }           from 'react-bootstrap';
 
-import AppNav from './AppNav'
-import Catch from './Catch'
+/** components */
+import AppNav           from './AppNav';
+import NewCatchModal    from './components/NewCatchModal'
+import UploadQueue      from './components/CatchUploadQueue'
+import CatchTable       from './components/CatchTable'
+import CatchDetailModal from "./components/CatchDetailModal";
 
-import { SERVER_URL } from './config';
+/** helper stuff */
+import Store    from './offline/Store'
+import print    from './util/Print'
+import isEmpty  from './util/ArrayFunc'
 
-import Auth from './security/auth';
-
-import { defaultErrorHandler } from './handlers/errorHandlers';
-import { checkResponseStatus, loginResponseHandler } from './handlers/responseHandlers';
-
-import 'whatwg-fetch'
+import 'whatwg-fetch';
 
 class App extends Component {
-    /** STATE FUNCTIONS */
-
     constructor() {
-        super()
+        super();
 
         this.state = {
             logged_in: false,
-            showing_modal: false,
+            online: true,
 
-            user_details: {
-                username: '',
-                password: ''
+            showing_nc_modal: false,        // new catch modal
+            coordinates: {                  // coordinates for the form
+                x: 0,
+                y: 0,
             },
 
-            route: '',
-            error: null
+            queue: [],                      // offline upload queue
+            posted_catches: [],             // catches in the db
+            showing_detail_modal: false,    // catch detail modal
+            display_catch: {},              // catch info to display
         }
     }
 
-    reset = () => {
-        this.setState({
-            logged_in: false,
 
-            user_details: {
-                username: '',
-                password: ''
+    /** checks for online & logged in status */
+    componentWillMount() {
+        // check if online
+        this.setState({online: navigator.onLine})
+
+
+        if (this.state.online) {
+            // check if a service worker is supported then register it
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker
+                    .register('./sw.js')
+                    .then( (r) => { print("App.cwm - service worker registered", r.scope); });
+            }
+        }
+
+        // check if logged in
+        const url = "/user/getLogin";
+
+        fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',
+        })
+            .then(r => r.text())
+            .then(text => {
+                if (text === 'false'){
+                    this.setState({logged_in: false})
+                }
+
+                else {
+                    this.setState({logged_in: true})
+                }
+            })
+
+
+        // get upload queue
+        Store.getQueue()
+            .then(q => {
+                if (isEmpty(q)) {
+                    return
+                }
+
+                this.setState({queue: q})
+            })
+            .catch(e => {print("App.cwm.Store.getQueuePromise", e, 1)})
+    }
+
+    /** checks location for autofilling coordinates in the form. */
+    componentDidMount() {
+        if (!navigator.geolocation){
+            print("App.cdm", 'no geolocation')
+            return
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            // success callback
+            position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+
+                if (latitude == null
+                    || longitude == null) {
+                    return
+                }
+
+
+                this.setState({
+                    coordinates: {
+                        x: latitude,
+                        y: longitude
+                    }
+                })
             },
 
-            route: 'login',
-            error: null
+            // failure callback
+            error => {
+                print("App.cdm - geolocate: ", error, 1)
+            }
+        );
+    }
+
+    /** updates the online status */
+    componentWillUpdate() {
+        // if online status was changed
+        const { online } = this.state
+
+        if (online !== navigator.onLine)
+            this.setState({online: navigator.onLine})
+    }
+
+
+
+    /** opens the new catch modal */
+    showNewCatchModal = () => {
+        this.setState({
+            showing_nc_modal: true
+        })
+    }
+
+    /** closes the new catch modal */
+    hideNewCatchModal = () => {
+        this.setState({
+            showing_nc_modal: false
+        })
+    }
+
+    /** opens the detail modal */
+    showDetailModal = (c) => {
+        this.setState({
+            display_catch: c,
+            showing_detail_modal: true
+        })
+    }
+
+    /** closes the detail modal */
+    hideDetailModal = () => {
+        this.setState({
+            display_catch: {},
+            showing_detail_modal: false
         })
     }
 
 
-    /* END STATE FUNCTIONS */
 
+    /** helper to get queue items */
+    getQueue = () => {
+        let list = []
+        let q = this.state.queue
 
-
-    /** LIFECYCLE FUNCTIONS */
-
-    componentDidMount() {
-        console.log('mounting...');
-
-        (async () => {
-            if (await Auth.loggedIn()) {
-                this.setState({route: 'catch'})
-            }
-
-            else {
-                this.setState({route: 'login'})
-            }
-        })();
-
-        console.log(`route: ${this.state.route}`)
-    }
-
-    componentDidUpdate() {
-        if (this.state.route !== 'login' && !Auth.loggedIn()) {
-            this.setState({route: 'login'})
+        for (let item in q) {
+            list.push(q[item].tripName)
         }
+
+        return list
     }
 
-    /* END LIFECYCLE FUNCTIONS */
-
-
-
-    /** LOGIN/LOGOUT FUNCTIONS */
-
-    // handles logging the user in
-    logIn = (e) => {
-        console.log('login')
-        e.preventDefault()
-
-
-
-        fetch(`${SERVER_URL}/api/login`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.state.user_details)
-        }).then(checkResponseStatus)
-            .then(response => loginResponseHandler(response, this.loginHandler))
-            .catch(error => defaultErrorHandler(error, this.errorHandler))
-
-        this.setState({logged_in: true})
-    }
-
-    // handles logging the user out
-    logOut = () => {
-        Auth.logOut();
-        this.reset();
-    }
-
-    loginHandler = () => {
-        this.setState({route: 'catch'})
-    }
-
-    errorHandler = (error) => {
-        this.reset()
-        this.setState({error: error.message})
-
-        alert(this.state.error)
-    }
-
-    /* END LOGIN/LOGOUT FUNCTIONS */
-
-
-
-    /** MODAL FUNCTIONS */
-
-    // updates the form field being changed
-    formInputChangeHandler = (e) => {
-        let {user_details} = this.state
-        let tg = e.target
-
-        user_details[tg.id] = tg.value
-
-        this.setState({user_details})
+    /** uploads the queue */
+    uploadQueue = () => {
+        Store.submitQueue()
+            .then(() => {this.setState({queue: []})})
+            .catch((e) => {print("App.uploadQueue", e, 1)})
     }
 
 
-    // opens and closes modal
-    toggleModal = () => {
-        let showing = !this.state.showing_modal
 
-        this.setState({showing_modal: showing})
+    /** stores the catch data in localforage */
+    submitNewCatch = (data) => {
+        alert("Saving catch in the queue to upload later.")
+        Store.storeCatch(data)
+            .then(d => {
+                let cache = this.state.queue
+
+                cache.push(d)
+
+                this.setState({queue: cache})
+            })
+            .catch(e => {print("App.submitNewCatch.Store.storeCatchPromise", e, 1)})
+
+
+        this.setState({
+            showing_nc_modal: false,
+        });
     }
 
 
-    /* END MODAL FUNCTIONS */
+
+    /** shows catches that have been uploaded */
+    showCatches = () => {
+        const url = "/catch/getCatches";
+
+        fetch(url, {
+            method: 'GET',
+            credentials: 'same-origin',     // Need credentials so that the JSESSIONID cookie is sent
+        })
+            .then(r => {
+                r.json().then(catches => {
+                        if (!isEmpty(catches)) {
+                            let c = []
+
+                            for (let fish in catches) {
+                                c.push(catches[fish])
+                            }
+
+
+                            this.setState({posted_catches: c})
+                        }
+                    })
+            })
+    }
+
 
 
     render() {
-
         const {
             logged_in,
-            showing_modal,
-            user_details,
-            route,
-        }  = this.state
+            showing_nc_modal,
+            coordinates,
+            online,
+            queue,
+            posted_catches,
+            showing_detail_modal,
+            display_catch
+        } = this.state
 
 
-        return(
-          <div>
-              {/*
-                    navbar
-                    receives whether or not user is logged in
-                    to know which function to call
-               */}
-              <AppNav
-                  showModal={this.toggleModal}
-                  logged_in={logged_in}
-                  logOut={this.logOut}
-              />
+        // for upload queue
+        let items_in_queue = false
+        let list = []
+
+        if (!isEmpty(queue)) {
+            list = this.getQueue()
+
+            items_in_queue = true
+        }
 
 
-              {/*
-                        login modal
-                        triggered when state changes
-                        calls parent login function
-               */}
-              <Modal
-                  show={showing_modal}
-                  onHide={this.toggleModal}
-                  animation={true}
+        // for posted catches
+        let catches = (!isEmpty(posted_catches))
+        let catch_to_display = (display_catch !== {})
 
-              >
-                  <Modal.Header closeButton>
-                      <Modal.Title>Log In</Modal.Title>
-                  </Modal.Header>
-                  <Form onSubmit={this.logIn}>
-                      <Modal.Body>
-                          <FormGroup controlId="username">
-                              <ControlLabel>Username</ControlLabel>
-                              <FormControl
-                                  autoFocus
-                                  type="username"
-                                  onChange={this.formInputChangeHandler}
-                                  value={user_details.username}
-                                  placeholder={"Username"}
-                              />
-                          </FormGroup>
-                          <FormGroup controlId="password">
-                              <ControlLabel>Password</ControlLabel>
-                              <FormControl
-                                  type="password"
-                                  value={user_details.password}
-                                  onChange={this.formInputChangeHandler}
-                                  placeholder={"Password"}
-                              />
-                          </FormGroup>
-                      </Modal.Body>
-                      <Modal.Footer>
-                          <Button type="submit">Log In</Button>
-                      </Modal.Footer>
-                  </Form>
-              </Modal>
+        return (
+              <div>
+                  <AppNav logged_in={logged_in}/>
 
-              {/*
-                    new catch button
-                    only shows when logged in
-              */
+                  { /* shows if there is a queue */
+                      items_in_queue &&
+                      <div>
+                          <UploadQueue queue={list}/>
+                          <br/>
+                      </div>
+                  }
+                  { /* only upload if online & logged in */
+                      items_in_queue && online && logged_in &&
+                      <div>
+                        <Button onClick={this.uploadQueue} bsStyle="success">Submit Pending Catches</Button>
+                        <br/>
+                      </div>
+                  }
+                  <Button onClick={this.showNewCatchModal} bsStyle="success">New Catch</Button>
+                  <br/>
+                  { /* only show catches if online & logged in */
+                      online && logged_in &&
+                      <div>
+                          <Button onClick={this.showCatches} bsStyle="success">Show Your Catches</Button>
+                          <br/>
+                      </div>
+                  }
+                  { /* only show if there have been catches posted */
+                      catches &&
+                      <div>
+                          <CatchTable
+                              catches={posted_catches}
+                              showDetailModal={this.showDetailModal}
+                          />
+                      </div>
+                  }
 
-                  logged_in && <Catch/>
-              }
 
-          </div>
-        )
+                  {/* modals */}
+                  <NewCatchModal
+                      showing={showing_nc_modal}
+                      hideModal={this.hideNewCatchModal}
+                      coordinates={coordinates}
+                      submitNewCatch={this.submitNewCatch}
+                  />
+                  {
+                      catch_to_display &&
+                      <CatchDetailModal
+                          showing={showing_detail_modal}
+                          hideModal={this.hideDetailModal}
+                          selected_catch={display_catch}
+                      />
+                  }
+              </div>
+        );
     }
 }
 
