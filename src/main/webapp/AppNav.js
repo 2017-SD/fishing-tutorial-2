@@ -5,7 +5,10 @@ import logo from './images/logo.png';
 import 'whatwg-fetch';
 
 const AppNav = props => {
-    const { logged_in } = props;
+    const {
+        logged_in,
+        online
+    } = props;
 
 
     // conditionally renders login/logout link
@@ -22,7 +25,10 @@ const AppNav = props => {
                 </Navbar.Header>
                 <Navbar.Collapse>
                     <Nav pullRight>
-                        {link}
+                        { /* only show login/logout button if online */
+                           online &&
+                           link
+                        }
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

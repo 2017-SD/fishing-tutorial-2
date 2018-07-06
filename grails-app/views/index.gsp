@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico"/>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <asset:stylesheet src="bootstrap.css"/>
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    %{--<!-- Optional theme -->--}%
+    %{--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">--}%
 
     <!--
       Notice the use of %PUBLIC_URL% in the tag above.
@@ -35,6 +35,8 @@
       To create a production bundle, use `npm run build`.
     -->
 
+<asset:javascript src="jquery-2.2.0.min.js"/>
+<asset:javascript src="bootstrap.js"/>
 <asset:javascript src="bundle.js"/>
 </body>
 </html>

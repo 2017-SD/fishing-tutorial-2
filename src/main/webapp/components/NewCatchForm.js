@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, FormControl, FormGroup, ControlLabel, ButtonToolbar } from 'react-bootstrap';
 
 import 'whatwg-fetch';
+import print from "../util/Print";
 
 class NewCatchForm extends Component {
     constructor(props) {
@@ -11,11 +12,45 @@ class NewCatchForm extends Component {
             tripName: '',
             fishType: '',
             dateCaught: '',
-            xCoord: this.props.coordinates.x,
-            yCoord: this.props.coordinates.y,
+            xCoord: 0,
+            yCoord: 0,
             comment: '',
             image: null,
         }
+    }
+
+
+    /** checks location for autofilling coordinates */
+    // takes a minute
+    componentWillMount() {
+        if (!navigator.geolocation){
+            print("NewCatchForm.cdm", 'no geolocation')
+            return
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            // success callback
+            position => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+
+                if (latitude == null
+                    || longitude == null) {
+                    return
+                }
+
+
+                this.setState({
+                    xCoord: latitude,
+                    yCoord: longitude
+                })
+            },
+
+            // failure callback
+            error => {
+                print("NewCatchForm.cdm - geolocate: ", error, 1)
+            }
+        );
     }
 
 

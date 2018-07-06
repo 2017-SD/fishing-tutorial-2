@@ -7,7 +7,11 @@ self.addEventListener('install', function (event) {
                 return cache.addAll(
                     [
                         '/',
-                        //'/assets/bundle.js?compile=false'
+                        '/assets/bundle.js?compile=false',
+                        '/assets/favicon.ico',
+                        '/assets/bootstrap.css?compile=false',
+                        '/assets/bootstrap.js?compile=false',
+                        '/assets/jquery-2.2.0.min.js?compile=false'
                     ]
                 );
             })

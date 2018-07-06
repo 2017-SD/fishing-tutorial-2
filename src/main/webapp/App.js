@@ -3,13 +3,14 @@ import { Button }           from 'react-bootstrap';
 
 /** components */
 import AppNav           from './AppNav';
-import NewCatchModal    from './components/NewCatchModal'
 import UploadQueue      from './components/CatchUploadQueue'
 import CatchTable       from './components/CatchTable'
-import CatchDetailModal from "./components/CatchDetailModal";
+import NewCatchModal    from './components/modals/NewCatchModal'
+import CatchDetailModal from './components/modals/CatchDetailModal';
+import LoadingModal     from './components/modals/LoadingModal'
 
 /** helper stuff */
-import Store    from './offline/Store'
+import Store    from './util/Store'
 import print    from './util/Print'
 import isEmpty  from './util/ArrayFunc'
 
@@ -23,11 +24,10 @@ class App extends Component {
             logged_in: false,
             online: true,
 
+            showing_loading_modal: false,   // modal indicating something is loading
+            loading_message: '',            // message to display on the modal
+
             showing_nc_modal: false,        // new catch modal
-            coordinates: {                  // coordinates for the form
-                x: 0,
-                y: 0,
-            },
 
             queue: [],                      // offline upload queue
             posted_catches: [],             // catches in the db
@@ -48,74 +48,48 @@ class App extends Component {
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker
                     .register('./sw.js')
-                    .then( (r) => { print("App.cwm - service worker registered", r.scope); });
+                    .then( () => { print("App.cwm - service worker registered."); })
+                    .catch(e => print("App.cwm - service worker", e, 1))
             }
+
+            // check if logged in
+            const url = "/user/getLogin";
+
+            fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin',
+            })
+                .then(r => r.text())
+                .then(text => {
+                    if (text === 'false'){
+                        this.setState({logged_in: false})
+                    }
+
+                    else {
+                        this.setState({logged_in: true})
+                    }
+                })
         }
 
-        // check if logged in
-        const url = "/user/getLogin";
 
-        fetch(url, {
-            method: 'GET',
-            credentials: 'same-origin',
-        })
-            .then(r => r.text())
-            .then(text => {
-                if (text === 'false'){
-                    this.setState({logged_in: false})
-                }
-
-                else {
-                    this.setState({logged_in: true})
-                }
-            })
-
+        this.showLoadingModal('LOADING UPLOAD QUEUE...')
 
         // get upload queue
         Store.getQueue()
             .then(q => {
+                this.setState({queue: []})
+
                 if (isEmpty(q)) {
                     return
                 }
 
                 this.setState({queue: q})
             })
-            .catch(e => {print("App.cwm.Store.getQueuePromise", e, 1)})
-    }
+            .catch(e => {
+                print("App.cwm.Store.getQueuePromise", e, 1)
+            })
 
-    /** checks location for autofilling coordinates in the form. */
-    componentDidMount() {
-        if (!navigator.geolocation){
-            print("App.cdm", 'no geolocation')
-            return
-        }
-
-        navigator.geolocation.getCurrentPosition(
-            // success callback
-            position => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-
-
-                if (latitude == null
-                    || longitude == null) {
-                    return
-                }
-
-
-                this.setState({
-                    coordinates: {
-                        x: latitude,
-                        y: longitude
-                    }
-                })
-            },
-
-            // failure callback
-            error => {
-                print("App.cdm - geolocate: ", error, 1)
-            }
-        );
+        this.hideLoadingModal()
     }
 
     /** updates the online status */
@@ -128,6 +102,21 @@ class App extends Component {
     }
 
 
+    /** opens the loading modal */
+    showLoadingModal = m => {
+        this.setState({
+            loading_message: m,
+            showing_loading_modal: true
+        })
+    }
+
+    /** closes the loading modal */
+    hideLoadingModal = () => {
+        this.setState({
+            showing_loading_modal: false,
+            loading_message: ''
+        })
+    }
 
     /** opens the new catch modal */
     showNewCatchModal = () => {
@@ -144,7 +133,7 @@ class App extends Component {
     }
 
     /** opens the detail modal */
-    showDetailModal = (c) => {
+    showDetailModal = c => {
         this.setState({
             display_catch: c,
             showing_detail_modal: true
@@ -154,37 +143,38 @@ class App extends Component {
     /** closes the detail modal */
     hideDetailModal = () => {
         this.setState({
-            display_catch: {},
-            showing_detail_modal: false
+            showing_detail_modal: false,
+            display_catch: {}
         })
     }
 
 
 
-    /** helper to get queue items */
-    getQueue = () => {
-        let list = []
-        let q = this.state.queue
-
-        for (let item in q) {
-            list.push(q[item].tripName)
-        }
-
-        return list
-    }
-
     /** uploads the queue */
     uploadQueue = () => {
+        this.showLoadingModal('UPLOADING CATCH QUEUE...')
+
         Store.submitQueue()
-            .then(() => {this.setState({queue: []})})
-            .catch((e) => {print("App.uploadQueue", e, 1)})
+            .then(m => {
+                this.setState({queue: []})
+
+                alert(m)
+            })
+            .catch(e => {
+                print("App.uploadQueue", e, 1)
+            })
+
+        this.hideLoadingModal()
     }
 
 
 
     /** stores the catch data in localforage */
-    submitNewCatch = (data) => {
-        alert("Saving catch in the queue to upload later.")
+    submitNewCatch = data => {
+        alert("Saving catch in the upload queue.")
+
+        this.showLoadingModal('STORING CATCH IN QUEUE...')
+
         Store.storeCatch(data)
             .then(d => {
                 let cache = this.state.queue
@@ -195,6 +185,8 @@ class App extends Component {
             })
             .catch(e => {print("App.submitNewCatch.Store.storeCatchPromise", e, 1)})
 
+        this.hideLoadingModal()
+
 
         this.setState({
             showing_nc_modal: false,
@@ -202,9 +194,10 @@ class App extends Component {
     }
 
 
-
     /** shows catches that have been uploaded */
     showCatches = () => {
+        this.showLoadingModal('RETRIEVING CATCHES...')
+
         const url = "/catch/getCatches";
 
         fetch(url, {
@@ -220,8 +213,9 @@ class App extends Component {
                                 c.push(catches[fish])
                             }
 
-
                             this.setState({posted_catches: c})
+
+                            this.hideLoadingModal()
                         }
                     })
             })
@@ -233,38 +227,33 @@ class App extends Component {
         const {
             logged_in,
             showing_nc_modal,
-            coordinates,
             online,
             queue,
             posted_catches,
             showing_detail_modal,
-            display_catch
+            display_catch,
+            showing_loading_modal,
+            loading_message
         } = this.state
 
 
-        // for upload queue
-        let items_in_queue = false
-        let list = []
+        // all items true if not empty
+        let items_in_queue      = (!isEmpty(queue))             // for upload queue
+        let catches             = (!isEmpty(posted_catches))    // for posted catches
+        let catch_to_display    = (display_catch !== {})        // for catch detail modal
 
-        if (!isEmpty(queue)) {
-            list = this.getQueue()
-
-            items_in_queue = true
-        }
-
-
-        // for posted catches
-        let catches = (!isEmpty(posted_catches))
-        let catch_to_display = (display_catch !== {})
 
         return (
               <div>
-                  <AppNav logged_in={logged_in}/>
+                  <AppNav
+                      logged_in={logged_in}
+                      online={online}
+                  />
 
                   { /* shows if there is a queue */
                       items_in_queue &&
                       <div>
-                          <UploadQueue queue={list}/>
+                          <UploadQueue queue={queue}/>
                           <br/>
                       </div>
                   }
@@ -296,10 +285,14 @@ class App extends Component {
 
 
                   {/* modals */}
+                  <LoadingModal
+                      showing={showing_loading_modal}
+                      hideModal={this.hideLoadingModal}
+                      message={loading_message}
+                  />
                   <NewCatchModal
                       showing={showing_nc_modal}
                       hideModal={this.hideNewCatchModal}
-                      coordinates={coordinates}
                       submitNewCatch={this.submitNewCatch}
                   />
                   {
