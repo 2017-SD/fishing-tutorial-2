@@ -10462,8 +10462,7 @@ var App = function (_Component) {
                 var cache = _this.state.queue;
 
                 cache.push(d);
-                //TODO
-                (0, _Print2.default)("app.shownewcatch - d", d);
+
                 _this.setState({ queue: cache });
             }).catch(function (e) {
                 (0, _Print2.default)("App.submitNewCatch.Store.storeCatchPromise", e, 1);
@@ -10835,30 +10834,21 @@ var AppNav = function AppNav(props) {
     var nav = function nav(link) {
         return _react2.default.createElement(
             _reactBootstrap.Navbar,
-            { style: { backgroundColor: '#A4DB8F', backgroundImage: 'none', borderRadius: 2 } },
+            { id: 'nav' },
             _react2.default.createElement(
-                _reactBootstrap.Navbar.Header,
-                null,
+                _reactBootstrap.Nav,
+                { pullLeft: true },
                 _react2.default.createElement(
-                    _reactBootstrap.Navbar.Brand,
-                    null,
-                    _react2.default.createElement(
-                        'a',
-                        { href: '/' },
-                        _react2.default.createElement('img', { src: _logo2.default, width: '32', height: '32' })
-                    )
-                ),
-                _react2.default.createElement(_reactBootstrap.Navbar.Toggle, null)
+                    _reactBootstrap.NavItem,
+                    { href: '/' },
+                    _react2.default.createElement(_reactBootstrap.Image, { src: _logo2.default, responsive: true })
+                )
             ),
             _react2.default.createElement(
-                _reactBootstrap.Navbar.Collapse,
-                null,
-                _react2.default.createElement(
-                    _reactBootstrap.Nav,
-                    { pullRight: true },
-                    /* only show login/logout button if online */
-                    online && link
-                )
+                _reactBootstrap.Nav,
+                { pullRight: true },
+                /* only show login/logout button if online */
+                online && link
             )
         );
     };
@@ -11849,18 +11839,14 @@ function submitQueue() {
                     if (q[i] == null) continue;
 
                     submitHelper(q[i]);
-                    console.log('test1');
                 }
 
-                console.log('test2');
                 // after all items in the queue are submitted, remove them
                 _localforage2.default.removeItem('catches').then(function () {
                     resolve('queue upload success!');
                 }).catch(function (e) {
                     reject(e);
                 });
-
-                console.log('test3');
             }).catch(function (e) {
                 reject(e);
             });
@@ -12873,7 +12859,7 @@ exports = module.exports = __webpack_require__(79)(undefined);
 
 
 // module
-exports.push([module.i, "/*.container {*/\n  /*color: #484848;*/\n  /*line-height: 1.28;*/\n  /*font-size: 1.2em;*/\n/*}*/\n\n\n/*.grails-icon img {*/\n  /*height: 27px;*/\n  /*background-image: url(\"../images/grails-cupsonly-logo-white.svg\");*/\n/*}*/\n\n\n/*a {*/\n  /*color: #db4800;*/\n  /*text-decoration: underline;*/\n/*}*/\n\n/*a:hover {*/\n  /*color: #db4800;*/\n  /*text-decoration: none*/\n/*}*/\n\n\n/*#content section h1 {*/\n  /*font-size: 34px;*/\n  /*line-height: 40px;*/\n  /*font-weight: 200;*/\n  /*text-align: center;*/\n  /*margin: 0;*/\n  /*padding: 20px 0;*/\n/*}*/\n\n/*#content section p {*/\n  /*margin-top: 0;*/\n  /*padding-bottom: 5px;*/\n  /*text-align: center;*/\n  /*color: #222;*/\n  /*font-size: 15px;*/\n  /*line-height: 25px;*/\n/*}*/\n\n/*#controllers a {*/\n  /*text-decoration: underline;*/\n/*}*/\n\n/*#controllers a:hover {*/\n  /*text-decoration: none;*/\n/*}*/\n\n/*.grails-logo-container {*/\n  /*background: #7c7c7c no-repeat 50% 30%;*/\n  /*margin-bottom: 20px;*/\n  /*color: white;*/\n  /*height:300px;*/\n  /*text-align:center;*/\n/*}*/\n\n/*!*img.grails-logo {*!*/\n/*!*height:340px;*!*/\n/*!*margin-top:-10px;*!*/\n/*!*}*!*/\n\n/*.navbar {*/\n  /*border: none;*/\n  /*border-radius: none;*/\n/*}*/\n\n/*.nav-link {*/\n  /*padding: .5rem;*/\n  /*border-radius: 3px;*/\n/*}*/\n\n/*.nav-link:hover, .nav-link:active {*/\n  /*background-color: #db4800;*/\n/*}*/\n\n/*.grails-icon img {*/\n  /*height: 27px;*/\n  /*background-image: url(\"../images/grails-cupsonly-logo-white.svg\");*/\n/*}*/\n\n/*.plus-logo {*/\n  /*font-size: 10rem;*/\n  /*margin-left: -100px;*/\n  /*margin-right: -13px;*/\n/*}*/\n\n/*.hero-logo {*/\n  /*width: 161px;*/\n  /*margin-right: -161px;*/\n  /*margin-bottom: 88px;*/\n/*}*/\n\n/*.navbar a.dropdown-toggle {*/\n  /*color:  white!important;*/\n  /*text-shadow: none;*/\n/*}*/\n\n/*.navbar .open a.dropdown-toggle {*/\n  /*color: black!important;*/\n  /*text-shadow: none;*/\n/*}*/\n\n/*.navbar .navbar-brand {*/\n  /*color:  white!important;*/\n  /*text-shadow: none;*/\n/*}*/\n\n/*.navbar-brand {*/\n  /*width: 80px;*/\n  /*height: 80px;*/\n  /*padding: 0;*/\n  /*margin: 0;*/\n/*}*/\n\n/*@media (min-width: 768px) {*/\n  /*.navbar-nav>li>a {*/\n    /*padding-top: 25px;*/\n    /*padding-bottom: 25px;*/\n  /*}*/\n/*}*/\n\n/*@media (max-width: 767px) {*/\n\n  /*.hero-logo {*/\n    /*display: none;*/\n  /*}*/\n\n  /*.plus-logo {*/\n    /*display: none;*/\n  /*}*/\n\n  /*.navbar-default .navbar-nav .open .dropdown-menu > li > a {*/\n    /*color: white!important;*/\n  /*}*/\n\n  /*.navbar-toggle .icon-bar {*/\n    /*background-color: white!important;*/\n  /*}*/\n\n\n/*}*/\n", ""]);
+exports.push([module.i, "#nav {\n    color: #A4DB8F!important;\n    background-image: none;\n    border: 2px;\n    margin-bottom: 15px;\n}\n\n#nav a {\n  color:  #FF0000!important;\n  text-shadow: none;\n}\n\n#nav a:hover {\n    color: #FFFFFF;\n    text-decoration: none;\n}\n\n/*@media (min-width: 768px) {*/\n  /*.navbar-nav>li>a {*/\n    /*padding-top: 25px;*/\n    /*padding-bottom: 25px;*/\n  /*}*/\n/*}*/\n\n/*@media (max-width: 767px) {*/\n\n  /*.hero-logo {*/\n    /*display: none;*/\n  /*}*/\n\n  /*.plus-logo {*/\n    /*display: none;*/\n  /*}*/\n\n  /*.navbar-default .navbar-nav .open .dropdown-menu > li > a {*/\n    /*color: white!important;*/\n  /*}*/\n\n  /*.navbar-toggle .icon-bar {*/\n    /*background-color: white!important;*/\n  /*}*/\n\n\n/*}*/\n", ""]);
 
 // exports
 

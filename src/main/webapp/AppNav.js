@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, Image, ListGroup } from 'react-bootstrap';
 
 import logo from './images/logo.png';
 import 'whatwg-fetch';
@@ -14,23 +14,19 @@ const AppNav = props => {
     // conditionally renders login/logout link
     const nav = (link) => {
         return (
-            <Navbar style={{backgroundColor: '#A4DB8F', backgroundImage: 'none', borderRadius: 2}}>
-                <Navbar.Header>
-                    <Navbar.Brand>
-                        <a href={'/'}>
-                            <img src={logo} width="32" height="32"/>
-                        </a>
-                    </Navbar.Brand>
-                    <Navbar.Toggle />
-                </Navbar.Header>
-                <Navbar.Collapse>
-                    <Nav pullRight>
-                        { /* only show login/logout button if online */
-                           online &&
-                           link
-                        }
-                    </Nav>
-                </Navbar.Collapse>
+            <Navbar id={'nav'}>
+                <Nav pullLeft>
+                    <NavItem href={'/'}>
+                        <Image src={logo} responsive/>
+                    </NavItem>
+                </Nav>
+
+                <Nav pullRight>
+                    { /* only show login/logout button if online */
+                        online &&
+                        link
+                    }
+                </Nav>
             </Navbar>
         )
     }
