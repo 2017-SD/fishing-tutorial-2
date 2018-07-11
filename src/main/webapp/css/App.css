@@ -5,12 +5,12 @@
 }
 
 #nav a {
-  color:  #FF0000!important;
+  color:  #FFFFFF!important;
   text-shadow: none;
 }
 
 #nav a:hover {
-    color: #FFFFFF;
+    color: #FF0000;
     text-decoration: none;
     text-shadow: none;
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
 
+import spinner from '../../images/spinner.gif'
+
 const LoadingModal = props => {
     const {
         showing,
@@ -14,6 +16,9 @@ const LoadingModal = props => {
             <Modal.Header closeButton>
                 <Modal.Title>{message}</Modal.Title>
             </Modal.Header>
+            <Modal.Body>
+                {spinner}
+            </Modal.Body>
         </Modal>
     );
 }

@@ -205,7 +205,8 @@ class App extends Component {
             credentials: 'same-origin',     // Need credentials so that the JSESSIONID cookie is sent
         })
             .then(r => {
-                r.json().then(catches => {
+                r.json()
+                    .then(catches => {
                         if (!isEmpty(catches)) {
                             let c = []
 
@@ -218,6 +219,7 @@ class App extends Component {
                             this.hideLoadingModal()
                         }
                     })
+                    .catch(e => print("App.ShowCatches", e, 1))
             })
     }
 
