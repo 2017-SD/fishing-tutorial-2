@@ -14,6 +14,9 @@ import Store    from './util/Store'
 import print    from './util/Print'
 import isEmpty  from './util/ArrayFunc'
 
+/** styling */
+import { app_styles } from './util/Styles'
+
 import 'whatwg-fetch';
 
 class App extends Component {
@@ -261,16 +264,18 @@ class App extends Component {
                   }
                   { /* only upload if online & logged in */
                       items_in_queue && online && logged_in &&
-                      <div>
+                      <div style={app_styles.button}>
                         <Button onClick={this.uploadQueue} bsStyle="success">Submit Pending Catches</Button>
                         <br/>
                       </div>
                   }
-                  <Button onClick={this.showNewCatchModal} bsStyle="success">New Catch</Button>
+                  <div style={app_styles.button}>
+                    <Button onClick={this.showNewCatchModal} bsStyle="success">New Catch</Button>
+                  </div>
                   <br/>
                   { /* only show catches if online & logged in */
                       online && logged_in &&
-                      <div>
+                      <div style={app_styles.button}>
                           <Button onClick={this.showCatches} bsStyle="success">Show Your Catches</Button>
                           <br/>
                       </div>

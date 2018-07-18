@@ -221,7 +221,7 @@ function submitQueue() {
 
                     // after all items in the queue are submitted, remove them
                     localforage.removeItem('catches')
-                        .then(() => { resolve('queue upload success!') })
+                        .then(() => { resolve('Your catches have been uploaded successfully!') })
                         .catch(e => { reject(e) })
                 })
                 .catch(e => { reject(e) })

@@ -1,19 +1,19 @@
-#nav {
-    color: #A4DB8F!important;
-    background-image: none;
-    margin-bottom: 15px;
-}
+/*#nav {*/
+    /*color: #A4DB8F!important;*/
+    /*background-image: none;*/
+    /*!*margin-bottom: 15px;*!*/
+/*}*/
 
-#nav a {
-  color:  #FFFFFF!important;
-  text-shadow: none;
-}
+/*#nav a {*/
+  /*color:  #FFFFFF!important;*/
+  /*text-shadow: none;*/
+/*}*/
 
-#nav a:hover {
-    color: #FF0000;
-    text-decoration: none;
-    text-shadow: none;
-}
+/*#nav a:hover {*/
+    /*color: #FF0000;*/
+    /*text-decoration: none;*/
+    /*text-shadow: none;*/
+/*}*/
 
 /*@media (min-width: 768px) {*/
   /*.navbar-nav>li>a {*/

@@ -21,6 +21,7 @@ const UploadQueue = props => {
     const table = () => {
         let rows = []
 
+
         for (let item in queue) {
             rows.push(
                 <tr key={item}>
