@@ -191,8 +191,8 @@ function getQueue() {
 
                         resolve(list)
                     })
-                    .catch(e => { reject(e) })
-            });
+            })
+            .catch(e => {reject(e)})
     })
 }
 

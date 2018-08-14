@@ -12,7 +12,8 @@ const app_styles = {
 
 /** NAVBAR */
 const nav = {
-    color: "#fff",
+    backgroundColor: "#73b566",
+    backgroundImage: "none",
     marginBottom: "15px"
 }
 

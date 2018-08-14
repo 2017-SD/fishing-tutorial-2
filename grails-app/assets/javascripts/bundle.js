@@ -5935,7 +5935,8 @@ var app_styles = {
 
     /** NAVBAR */
 };var nav = {
-    color: "#fff",
+    backgroundColor: "#73b566",
+    backgroundImage: "none",
     marginBottom: "15px"
 };
 
@@ -10397,13 +10398,13 @@ var _CatchUploadQueue = __webpack_require__(156);
 
 var _CatchUploadQueue2 = _interopRequireDefault(_CatchUploadQueue);
 
-var _CatchTable = __webpack_require__(155);
-
-var _CatchTable2 = _interopRequireDefault(_CatchTable);
-
 var _NewCatchModal = __webpack_require__(160);
 
 var _NewCatchModal2 = _interopRequireDefault(_NewCatchModal);
+
+var _CatchTable = __webpack_require__(155);
+
+var _CatchTable2 = _interopRequireDefault(_CatchTable);
 
 var _CatchDetailModal = __webpack_require__(158);
 
@@ -10540,6 +10541,7 @@ var App = function (_Component) {
                 credentials: 'same-origin' // Need credentials so that the JSESSIONID cookie is sent
             }).then(function (r) {
                 r.json().then(function (catches) {
+                    console.log(catches);
                     if (!(0, _ArrayFunc2.default)(catches)) {
                         var c = [];
 
@@ -10552,7 +10554,7 @@ var App = function (_Component) {
                         _this.hideLoadingModal();
                     }
                 }).catch(function (e) {
-                    return (0, _Print2.default)("App.ShowCatches", e, 1);
+                    return console.log("App.ShowCatches");
                 });
             });
         };
@@ -10596,7 +10598,7 @@ var App = function (_Component) {
                 }
 
                 // check if logged in
-                var url = "/user/getLogin";
+                var url = "http://localhost:8080/user/getLogin";
 
                 fetch(url, {
                     method: 'GET',
@@ -10609,6 +10611,8 @@ var App = function (_Component) {
                     } else {
                         _this2.setState({ logged_in: true });
                     }
+                }).catch(function (e) {
+                    console.error(e);
                 });
             }
 
@@ -11192,10 +11196,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NewCatchForm = function (_Component) {
     _inherits(NewCatchForm, _Component);
 
-    function NewCatchForm(props) {
+    function NewCatchForm() {
         _classCallCheck(this, NewCatchForm);
 
-        var _this = _possibleConstructorReturn(this, (NewCatchForm.__proto__ || Object.getPrototypeOf(NewCatchForm)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (NewCatchForm.__proto__ || Object.getPrototypeOf(NewCatchForm)).call(this));
 
         _this.valid = function () {
             var _this$state = _this.state,
@@ -11883,9 +11887,9 @@ function getQueue() {
                 for (var item in q) {
                     list.push(q[item].tripName);
                 }resolve(list);
-            }).catch(function (e) {
-                reject(e);
             });
+        }).catch(function (e) {
+            reject(e);
         });
     });
 }

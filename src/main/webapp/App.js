@@ -4,8 +4,8 @@ import { Button }           from 'react-bootstrap';
 /** components */
 import AppNav           from './AppNav';
 import UploadQueue      from './components/CatchUploadQueue'
-import CatchTable       from './components/CatchTable'
 import NewCatchModal    from './components/modals/NewCatchModal'
+import CatchTable       from './components/CatchTable'
 import CatchDetailModal from './components/modals/CatchDetailModal';
 import LoadingModal     from './components/modals/LoadingModal'
 
@@ -56,7 +56,7 @@ class App extends Component {
             }
 
             // check if logged in
-            const url = "/user/getLogin";
+            const url = "http://localhost:8080/user/getLogin";
 
             fetch(url, {
                 method: 'GET',
@@ -72,6 +72,7 @@ class App extends Component {
                         this.setState({logged_in: true})
                     }
                 })
+                .catch(e => {console.error(e)})
         }
 
 
@@ -210,6 +211,7 @@ class App extends Component {
             .then(r => {
                 r.json()
                     .then(catches => {
+                        console.log(catches)
                         if (!isEmpty(catches)) {
                             let c = []
 
@@ -222,7 +224,7 @@ class App extends Component {
                             this.hideLoadingModal()
                         }
                     })
-                    .catch(e => print("App.ShowCatches", e, 1))
+                    .catch(e => console.log("App.ShowCatches"))
             })
     }
 

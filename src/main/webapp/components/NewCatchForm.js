@@ -5,8 +5,8 @@ import 'whatwg-fetch';
 import print from "../util/Print";
 
 class NewCatchForm extends Component {
-    constructor(props) {
-        super(props)
+    constructor() {
+        super()
 
         this.state = {
             tripName: '',

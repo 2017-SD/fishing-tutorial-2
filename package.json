@@ -43,8 +43,9 @@
     "localforage": "^1.7.2"
   },
   "jest": {
+    "setupFiles": ["./src/main/webapp/util/LocalforageMock.js"],
     "moduleNameMapper": {
-      ".+\\.(css|png)$": "identity-obj-proxy"
+      ".+\\.(css|png|gif)$": "identity-obj-proxy"
     }
   }
 }

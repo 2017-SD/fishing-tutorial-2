@@ -2,6 +2,8 @@ import React from 'react';
 import Adapter from 'enzyme-adapter-react-16'
 import { shallow, mount, render, configure } from 'enzyme';
 
+import LocalStorageMock from './util/LocalforageMock'
+
 import App from './App';
 import AppNav from './AppNav'
 
@@ -9,6 +11,8 @@ import AppNav from './AppNav'
 
 describe("App", () => {
     configure({ adapter: new Adapter() })
+
+    //tutoriwindow.localStorage = LocalStorageMock;
 
     let props;
     let mountedApp;
