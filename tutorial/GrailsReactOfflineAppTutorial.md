@@ -19,13 +19,12 @@ We will be covering the following:
 * Using [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to talk to the app’s backend
 * [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 * [ServiceWorkers](https://developers.google.com/web/fundamentals/primers/service-workers/) and [Localforage](https://github.com/localForage/localForage)
-* [Jest](https://jestjs.io/docs/en/getting-started) and [Enzyme](airbnb.io/enzyme/)
 
 <a name="prerequisites"></a>
 ### Prerequisites
 The first thing we are going to do is set up our development environment. Before we start, install Yarn and Node using your machine’s preferred package manager. Also, if you’re using Chrome, install React Developer Tools [here](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi). This is an extension allowing you to view your React application and all of its states and props, which helps with debugging.
 
-In IntelliJ, set up a new Grails project. Under options, add the flag “—profile=react-webpack”
+In IntelliJ, set up a new Grails project. Under options, add the flag `—profile=react-webpack`
 You can learn more about Grails profiles [here](grails.org/profiles.html). For our purposes, we are building a single React app that uses Grails as a backend.
 
 ![](images/1.png)
@@ -36,8 +35,8 @@ The first run will take the longest to initialize everything, so let’s get thi
 
 ![](images/2.png)
 
-Next, we need to download some node modules that our app will depend on. In the terminal in Intellij, run the command `yarn add -D localforage jest enzyme enzyme-adapter-react-16`.
-The -D flag stands for ‘dev’, as these are developer dependencies. Refer back to list of things covered for more information on these packages. Enzyme is a testing utility for React, and the adapter is used to run Jest tests through it. The number at the end of the package (16) must correspond to the version of React you are using, which can be found in the **package.json** file under dependencies. This file is information about the app, as well as all the node modules it requires. 
+Next, we need to download some node modules that our app will depend on. In the terminal in Intellij, run the command `yarn add -D localforage`.
+The -D flag stands for ‘dev’, as these are developer dependencies. Refer back to list of things covered for more information on these packages. 
 
 <a name="backend"></a>
 ### Backend 
