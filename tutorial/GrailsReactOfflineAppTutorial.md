@@ -1,4 +1,11 @@
 # Grails/React Offline App Tutorial
+* [Introduction](#introduction)
+* [Prerequisites](#prerequisites)
+* [Backend](#backend)
+* [Frontend](#frontend)
+* [Offline Functionality](#offline-functionality)
+
+<a name="introduction"></a>
 ### Introduction
 This tutorial is meant to be an introduction to React, specifically building react on top of a Grails backend. It assumes little to no React knowledge, and at least cursory knowledge of Grails.
 
@@ -13,32 +20,17 @@ We will be covering the following:
 * [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 * [ServiceWorkers](https://developers.google.com/web/fundamentals/primers/service-workers/) and [Localforage](https://github.com/localForage/localForage)
 * [Jest](https://jestjs.io/docs/en/getting-started) and [Enzyme](airbnb.io/enzyme/)
-# Grails/React Offline App Tutorial
-### Introduction
-This tutorial is meant to be an introduction to React, specifically building react on top of a Grails backend. It assumes little to no React knowledge, and at least cursory knowledge of Grails.
 
-We are going to be building a [progressive web app](https://developers.google.com/web/progressive-web-apps/) that works even with no internet connection. It will be a simple fishing companion app that you would take on a fishing trip to document your catches.
-
-We will be covering the following:
-
-* Building a grails app
-* [Spring Security](https://grails-plugins.github.io/grails-spring-security-core/snapshot/index.html)
-* React components
-* Using [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to talk to the app’s backend
-* [Promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
-* [ServiceWorkers](https://developers.google.com/web/fundamentals/primers/service-workers/) and [Localforage](https://github.com/localForage/localForage)
-* [Jest](https://jestjs.io/docs/en/getting-started) and [Enzyme](airbnb.io/enzyme/)
-
-
+<a name="prerequisites"></a>
 ### Prerequisites
 The first thing we are going to do is set up our development environment. Before we start, install Yarn and Node using your machine’s preferred package manager. Also, if you’re using Chrome, install React Developer Tools [here](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi). This is an extension allowing you to view your React application and all of its states and props, which helps with debugging.
 
 In IntelliJ, set up a new Grails project. Under options, add the flag “—profile=react-webpack”
-You can learn more about Grails profiles [here](grails.org/profiles.html). For our purposes, we are building a single React app that uses Grails as a backend
+You can learn more about Grails profiles [here](grails.org/profiles.html). For our purposes, we are building a single React app that uses Grails as a backend.
 
 ![](images/1.png)
 
-After everything is initialized, go to **build.gradle** and find the ‘node’ option. Update the values for version and yarnVersion to reflect the current versions of yarn and node respectively. At the time of writing, they are v10.2.1 and 1.7.0, but you can run `node -v` and `yarn -v` to check them.
+After everything is initialized, go to **build.gradle** and find the ‘node’ option. Update the values for version and yarnVersion to reflect the current versions of yarn and node respectively. At the time of writing, they are v10.2.1 and 1.7.0, but you can run `node -v` and `yarn -v` to check.
 
 The first run will take the longest to initialize everything, so let’s get this out of the way now, as well as make sure everything is in working order. We should be greeted with this page:
 
@@ -47,9 +39,9 @@ The first run will take the longest to initialize everything, so let’s get thi
 Next, we need to download some node modules that our app will depend on. In the terminal in Intellij, run the command `yarn add -D localforage jest enzyme enzyme-adapter-react-16`.
 The -D flag stands for ‘dev’, as these are developer dependencies. Refer back to list of things covered for more information on these packages. Enzyme is a testing utility for React, and the adapter is used to run Jest tests through it. The number at the end of the package (16) must correspond to the version of React you are using, which can be found in the **package.json** file under dependencies. This file is information about the app, as well as all the node modules it requires. 
 
-
+<a name="backend"></a>
 ### Backend 
-The basic idea of this app is that the user catches a fish in real life. The fisher then opens the app and fills out a form detailing the catch they just landed. This form data gets saved into Grails as a ‘Catch’ that can then be looked up. The backend is going to be where we house our database and user authentication. 
+The basic idea of this app is that the user catches a fish in real life. The fisher then opens the app and fills out a form detailing the catch just landed. This form data gets saved into Grails as a ‘Catch’ that can then be looked up. The backend is going to be where we house our database and user authentication. 
 
 First, we are going to add Spring Security Core. This allows for us to authenticate users. Add this line to **build.gradle** at the end of the dependencies list after line 69.
 
@@ -100,7 +92,7 @@ Run this command to set up Users and User Roles, making sure to replace ‘fishi
 
 ![](images/3.png)
 
-Open up */grails-app/conf/application.groovy*. At the bottom of the staticRules array, add these rules starting at line 18:
+Open up */grails-app/conf/application.groovy*. At the bottom of the staticRules array, add these rules starting around line 18:
 
 ```groovy
 [pattern: '/logout/**',      access: ['permitAll']],  // for easy access to logout
@@ -118,7 +110,7 @@ grails.plugin.springsecurity.logout.postOnly = false
 
 This gives the user an easier time logging out by not requiring a POST request.
 
-Next, go to */grails-app/conf/application.yml*. In this file, we will be specifying some rules regarding uploading files. At the very top, add this resources line to the end of the block starting at line 11.
+Next, go to */grails-app/conf/application.yml*. In this file, we will be specifying some rules regarding uploading files. At the very top, add this resources line to the end of the block starting around line 11.
 
 ```yml
 resources:
@@ -367,7 +359,7 @@ Now, go back to the */user/getLogin* page. It should now show us who we’re log
 
 That’s it for the backend. Now we have a foundation for the frontend which we will be building in React.
 
-
+<a name="frontend"></a>
 ### Frontend
 Recall the fishing scenario from earlier. The frontend is going to contain the form and all of the rest of the user interactions.
 
@@ -415,9 +407,11 @@ class App extends Component {
 export default App;
 ```
 
-App.js is what is known as a [React Component](https://reactjs.org/docs/react-component.html). Look at the reference for more details. The basic idea is that components can be defined as classes or functions. Components defined as classes have the constructor block and usually defines a [state](https://reactjs.org/docs/state-and-lifecycle.html). The state of a component can be thought of as a list of global variables that are immutable. If the app changes state, it must re-render to reflect those changes. 
-The block starting at line 10 is the constructor. The call to `super()` initializes the constructor so that the component can use the `this` keyword. The next line defines the state of the app. It defines two booleans: `online` and `logged_in`. `online` is going to indicate whether or not the user is online, and `logged_in`, whether or not the user is logged in. 
-Every component must have a `render() { }` block. The html-esque tags in the return statement are converted to html and get displayed in the browser. Before the return statement, additional logic that controls what gets rendered can be placed here. Lines 22-25 is a shorthand way of referencing state variables. Without this, online and logged_in must be referenced using `this.state.online` and `this.state.logged_in`. Finally, the tag at line 29 is our Navbar. Lines 30 and 31 are called props. These are parameter variables passed to a component in the same way a function is called with arguments. We will touch on this more in a second.
+App.js is what is known as a [React Component](https://reactjs.org/docs/react-component.html). Look at the reference for more details. The basic idea is that components can be defined as classes or functions. Components defined as classes have the constructor block and usually defines a [state](https://reactjs.org/docs/state-and-lifecycle.html). The state of a component can be thought of as a list of global variables that are immutable. If the app changes state, it must re-render to reflect those changes.
+ 
+The block starting around line 10 is the constructor. The call to `super()` initializes the constructor so that the component can use the `this` keyword. The next line defines the state of the app. It defines two booleans: `online` and `logged_in`. `online` is going to indicate whether or not the user is online, and `logged_in`, whether or not the user is logged in. 
+
+Every component must have a `render() { }` block. The html-esque tags in the return statement are converted to html and get displayed in the browser. Before the return statement, additional logic that controls what gets rendered can be placed here. Lines 22-25 is a shorthand way of referencing state variables. Without this, online and logged_in must be referenced using `this.state.online` and `this.state.logged_in`. Finally, the tag around line 29 is our Navbar. Lines 30 and 31 are called props. These are parameter variables passed to a component in the same way a function is called with arguments. We will touch on this more in a second.
 
 Navigate to AppNav.js. Replace the contents with the following:
 
@@ -472,7 +466,7 @@ export default AppNav;
 
 AppNav is a component that is defined as a function rather than a class. These are also known as [stateless](https://hackernoon.com/react-stateless-functional-components-nine-wins-you-might-have-overlooked-997b0d933dbc) functional or dumb components. They do not have as much overhead as a stateful component, and are meant to inherit state from their parent as properties. 
 
-Before we do anything, there is some styling we need to add. The import at line 4 will be throwing an error, because that file does not exist yet. In the */src/* folder, make a directory called *util*. This is where we will be keeping extra JavaScript files that are not components. Make a JavaScript file called Styles, and fill it out like below. Then, navigate to */src/main/webapp/css/App.css* and comment everything out.
+Before we do anything, there is some styling we need to add. The import around line 4 will be throwing an error, because that file does not exist yet. In the */src/* folder, make a directory called *util*. This is where we will be keeping extra JavaScript files that are not components. Make a JavaScript file called Styles, and fill it out like below. Then, navigate to */src/main/webapp/css/App.css* and comment everything out.
 
 ```js
 /** APP */
@@ -513,15 +507,15 @@ const nav_styles = {
 export { app_styles, nav_styles }
 ```
 
-In React, styles are declared like objects. The css properties names are the same, except that the ones that are words separated by a dash become camelCase. One way to add styling is to make them like this, but they can also be added inline as well. Check [this](https://codeburst.io/4-four-ways-to-style-react-components-ac6f323da822) article out to see more ways to style your components.
+In React, styles are declared like objects. The css properties still have the same name, except that the ones that are words separated by a dash become camelCase (`background-color` becomes `backgroundColor`). You can add styling like this, but it can be added inline as well. Check [this](https://codeburst.io/4-four-ways-to-style-react-components-ac6f323da822) article out to see more ways to style your components.
 
-Now, back to AppNav. The first thing you may notice is the strange declaration of the function at line 8. This is called an [arrow-function](https://codeburst.io/javascript-arrow-functions-for-beginners-926947fc0cdc). The key differences between a regularly declared function and an arrow function are that arrow functions are written in a cleaner syntax, and they do not bind the keyword `this`. What that means is that any arrow function that references `this` references the original binding, and doesn’t try to look for something inside the function. This will be expanded on more as we go through the guide. Check the arrow-function link for a more in-depth explanation.
+Now, back to AppNav. The first thing you may notice is the strange declaration of the function around line 8. This is called an [arrow-function](https://codeburst.io/javascript-arrow-functions-for-beginners-926947fc0cdc). The key differences between a regularly declared function and an arrow function are that arrow functions are written in a cleaner syntax, and they do not bind the keyword `this`. What that means is that any arrow function that references `this` references the original binding, and doesn’t try to look for something inside the function. This will be expanded on more as we go through the guide. Check the arrow-function link for a more in-depth explanation.
 
 Lines 9-12 are a cleaner way to declare the props that are being passed to the component. They can be listed as separate parameters like so: 
 	`const AppNav = ({logged_in, online}) => {…}`
 and would change nothing about the functionality. 
 
-Line 16-33 is the navbar itself. It is being built as a function because it contains the login/logout button. Which button gets displayed depends on the `logged_in` prop. This is called [conditional rendering](https://reactjs.org/docs/conditional-rendering.html). The link that gets passed as a parameter is going to be one of the NavItems declared on lines 36 and 37. Furthermore, we only want to display this link if the app is online, since logging in or out requires an internet connection. The block at line 26-29 is how we achieve this. It is similar to the logical `and` in other programming languages, the idea being that if the first half is true, then it will look at the second half, and skip over it otherwise. 
+Line 16-33 is the navbar itself. It is being built as a function because it contains the login/logout button. Which button gets displayed depends on the `logged_in` prop. This is called [conditional rendering](https://reactjs.org/docs/conditional-rendering.html). The link that gets passed as a parameter is going to be one of the NavItems declared on lines 36 and 37. Furthermore, we only want to display this link if the app is online, since logging in or out requires an internet connection. The block around line 26-29 is how we achieve this. It is similar to the logical `and` in other programming languages, the idea being that if the first half is true, then it will look at the second half, and skip over it otherwise. 
 
 Finally, the line at the very bottom tells React to export the function so that it can be imported in another file.
 
@@ -929,10 +923,12 @@ render() {
 ```
 
 The lines at 154 and 155 are conditions for conditionally rendering the Catch table and Catch detail modal respectively. They must be conditionally rendered so that the app does not crash trying to do operations on empty or undefined objects.
+
 The button on line 167 has the `showCatches` function we made earlier as its `onClick` function. After the function completes its run, the `catches` boolean from line 154 becomes true, which allows the Catch table to be rendered. Since the fetch requires you to be online and logged in to get a proper response, we should only allow it to be rendered if those requirements are met.
+
 Notice the functions being passed as props to the Catch table, loading modal, and Catch detail modal. These are the functions being referenced as props inside of the components when we defined them earlier, and defined here rather than inside the components themselves.
 
-Run the app again. Initially, it looks the exact same. Log in, and the `showCatches` button appears. Click on it, and the table appears with the catch that was Bootstrapped into the database
+Run the app again. Initially, it looks exactly the same. Log in, and the `showCatches` button appears. Click on it, and the table appears with the catch that was Bootstrapped into the database
 
 ![](images/9.png)
 
@@ -942,12 +938,12 @@ Click on the row in the table, and the modal with the Catch details appears.
 
 The next step is to use what we learned to create a new catch and save it to Grails. Recall that this part is supposed to work regardless of an internet connection. We will set this up now.
 
-
+<a name="offline-functionality"></a>
 ### Offline Functionality
 
 To make our app work offline, we will need something called a [service worker](https://developers.google.com/web/fundamentals/primers/service-workers/). A service worker is a script that runs in the background and provides functionality that does not require user interaction. Our service worker will cache our app so that it can be accessed offline. 
 
-In the */src/webapp/* folder, make a JavaScript file called `sw` which will be short for ‘service worker’. Fill it out like this, remembering to change the app name at line 5 to whatever you named yours:
+In the */src/webapp/* folder, make a JavaScript file called `sw` which will be short for ‘service worker’. Fill it out like this, remembering to change the app name around line 5 to whatever you named yours:
 
 ```js
 /** SERVICE WORKER */
@@ -1228,9 +1224,9 @@ export default NewCatchModal;
 
 ```
 
-Notice that this component is actually a combination of two components. The body of the modal contains the form the user will fill out. Notice also that the `submitNewCatch` function that it takes. In React, props can be passed down like this as far as necessary. It makes for neater code and an easier time hunting bugs. Create a new component in the components folder called `NewCatchForm`.
+In the body of the Modal, we have our New Catch Form. This is another component that we will create. It is a form that takes the submitNewCatch prop that was passed to the modal, called upon submitting the form. In the *components* folder, make a new component called **NewCatchForm**.
 
-The New Catch form component is going to be a little bit different. Unlike the other components, forms cannot be stateless. They must keep an internal state to send its data somewhere else. Read [this](https://reactjs.org/docs/forms.html) doc for more information. 
+The New Catch form component is going to be a little bit different. Unlike the other components, forms cannot be stateless. A form must keep an internal state so that it can send its data somewhere else. Read [this](https://reactjs.org/docs/forms.html) doc for more information. 
 
 Start by filling out the component like this:
 
@@ -1325,7 +1321,7 @@ valid = () => {
 }
 ```
 
-Upon submission, this function gets called. If it returns false the form is not submitted. Under this function, we will add the submit function.
+Upon submission, this function gets called. If it returns false, the form is not submitted. Under this function, we will add the submit function.
 
 ```js
 /** submits the form if valid */
@@ -1349,7 +1345,7 @@ handleSubmit = (e) => {
 }
 ```
 
-The parameter `e` stands for event. Upon submission of a form, an event is fired. The first thing we need to do is call `preventDefault()` on the event. This is required, because the default action tends to be something else. Next, it checks that the form is valid. If it is, it compiles the form data into an object to pass to the `submitNewCatch` function that was passed to it.
+The parameter `e` stands for event. Upon submission of a form, an event is fired. The first thing we need to do is call `preventDefault()` on the event. This is required, because the default HTML form behavior is browsing to a new page when the user submits the form. Instead, we want to ensure that the form data is valid, then compile the data into an object to pass to the `submitNewCatch` function.
 
 In React, form fields have a function property called `onChange` which fires whenever the field is changed. We need to write a change handler to store the form data in its respective state variable. Under the `handleSubmit` function, add these two functions.
 
@@ -1531,7 +1527,7 @@ To write a Promise, we start by returning a new Promise. As previously mentioned
 
 Localforage’s full docs can be found [here](https://localforage.github.io/localForage/). To use localforage, the first thing we must do is set a driver for its datastore. We will be using [IndexedDB](https://developers.google.com/web/ilt/pwa/working-with-indexeddb). All the localforage operations must be done inside the resolved Promise. 
 
-To store the Catches, we first will generate a unique id for the image, if there is one attached. The id replaces the image in the Catch, and the Catch is stored in a queue in localforage. The image itself is converted to a blob string stored in another queue and its key is its id. 
+To store the Catches, we first will generate a unique id for the image if one is attached. The id replaces the image in the Catch, and the Catch is stored in a queue in localforage. The image itself is converted to a blob string stored in another queue and its key is its id. 
 
 The first thing we do is check the Catch data for an image. If there is one, we generate a unique id using the following helper functions:
 
@@ -1598,7 +1594,7 @@ function submitQueue() {
 }
 ```
 
-We will write another Promise to achieve this. Again, we must set the driver for localforage before we can use it. This time, we get the queue from localforage. Then, one at a time to avoid race conditions, we pass each item to a helper function that uploads it to Grails. Finally, we remove the queue from localforage, because it is no longer needed. We resolve this Promise with a success message. Here is the helper function:
+We will write another Promise to achieve this. Again, we must set the driver for localforage before we can use it. This time, we get the queue from localforage. Then, one at a time to avoid race conditions, we pass each item to a helper function that uploads it to Grails. Finally, we remove the queue from localforage, as it is no longer needed. We resolve this Promise with a success message. Here is the helper function:
 
 ```js
 /** submits one at a time */
@@ -1661,7 +1657,7 @@ function submitHelper(item) {
 }
 ```
 
-The function checks the item for an image. If there is, it grabs it out of localforage, converts it back into its file, and attaches it to the Catch. It then posts the Catch to the `newCatch` function in the Catch controller in Grails. Finally, it removes the image from localforage. If there is no image attached, it simply posts the Catch data to Grails. Here is the `b64toBlob` function that converts the image from the string to the file.
+The function checks the item for an image. If there is an image, it grabs it out of localforage, converts it from a blob string back into an image, and attaches it to the Catch. It then posts the Catch to the `newCatch` function in the Catch controller in Grails. Finally, it removes the image from localforage. If there is no image attached, it simply posts the Catch data to Grails. Here is the `b64toBlob` function that converts the image into an actual image from its blob string.
 
 ```js
 // Converts blob string to a blob file
