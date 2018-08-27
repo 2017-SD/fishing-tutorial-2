@@ -11,6 +11,8 @@ This tutorial is meant to be an introduction to React, specifically building rea
 
 We are going to be building a [progressive web app](https://developers.google.com/web/progressive-web-apps/) that works even with no internet connection. It will be a simple fishing companion app that you would take on a fishing trip to document your catches.
 
+The completed app can be found on Github [here](https://github.com/2017-SD/fishing-tutorial-2)
+
 We will be covering the following:
 
 * Building a grails app
@@ -25,7 +27,7 @@ We will be covering the following:
 The first thing we are going to do is set up our development environment. Before we start, install Yarn and Node using your machine’s preferred package manager. Also, if you’re using Chrome, install React Developer Tools [here](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi). This is an extension allowing you to view your React application and all of its states and props, which helps with debugging.
 
 In IntelliJ, set up a new Grails project. Under options, add the flag `—profile=react-webpack`
-You can learn more about Grails profiles [here](grails.org/profiles.html). For our purposes, we are building a single React app that uses Grails as a backend.
+You can learn more about Grails profiles [here](http://grails.org/profiles.html). For our purposes, we are building a single React app that uses Grails as a backend.
 
 ![](images/1.png)
 
@@ -109,7 +111,7 @@ grails.plugin.springsecurity.logout.postOnly = false
 
 This gives the user an easier time logging out by not requiring a POST request.
 
-Next, go to */grails-app/conf/application.yml*. In this file, we will be specifying some rules regarding uploading files. At the very top, add this resources line to the end of the block starting around line 11.
+Next, go to */grails-app/conf/application.yml*. In this file, we will be specifying some rules regarding uploading files. At the very top, add this resources line to the end of the block starting around line 11. This line [exposes static resouces](https://gangmax.me/blog/2017/02/09/expose-static-resources-in-grails/) like .css and .js files to the browser.
 
 ```yml
 resources:
@@ -573,7 +575,7 @@ componentWillUpdate() {
 This function gets called every time the component updates, like during a state change or a rendering of another component. It simply checks the online property against its own online state, and sets the state to match the property if it changed.
 
 
-Next, we are going to add a feature to display the catches we landed, i.e. getCatches. Functionally, it will work like this: if the user is online and logged in a request can be made to Grails from React to retrieve the catches. This means we will need to keep track of the catches somehow. We would also like to be able to view the details of each catch. The workflow then is to make a fetch request to Grails, and store the catches in a table to be viewed. We will start by adding a couple more things to the state. In the constructor, add these to the state:
+Next, we are going to add a feature to display the catches we landed, i.e. getCatches. Functionally, it will work like this: if the user is online and logged in a request can be made to Grails from React to retrieve the catches. This means we will need to keep track of the catches somehow. We would also like to be able to view the details of each catch. The workflow then is to make a fetch request to Grails, and store the catches in a table to be viewed. We will start by adding a couple more things to the state. In the *App.js* constructor, add these to the state:
 
 ```js
 posted_catches: [],             // catches in the database

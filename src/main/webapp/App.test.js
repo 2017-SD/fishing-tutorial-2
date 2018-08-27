@@ -12,7 +12,7 @@ import AppNav from './AppNav'
 describe("App", () => {
     configure({ adapter: new Adapter() })
 
-    //tutoriwindow.localStorage = LocalStorageMock;
+    // window.localStorage = LocalStorageMock;
 
     let props;
     let mountedApp;
